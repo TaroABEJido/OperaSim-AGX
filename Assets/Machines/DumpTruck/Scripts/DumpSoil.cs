@@ -190,6 +190,9 @@ namespace PWRISimulator
         // ParticleEmitterが開始から今まで生成した粒子の数。
         double emittedQuantity = 0.0;
 
+        // インスタンス監視用変数
+        AGXUnity.Simulation _sim; bool _subscribed;
+
         #endregion
 
         #region Public Methods
@@ -397,7 +400,6 @@ namespace PWRISimulator
         void OnPostStepForward()
         {
             needsUpdate = true;
-
             UpdateDoorForce();
         }
 
@@ -406,9 +408,11 @@ namespace PWRISimulator
         /// </summary>
         protected override void OnEnable()
         {
-            if (Simulation.HasInstance)
-                Simulation.Instance.StepCallbacks.PostStepForward += OnPostStepForward;
+            StartCoroutine(EnsureSubscribed());      // ← HasInstance が true になるまで待つ
             base.OnEnable();
+            // if (Simulation.HasInstance)
+            //     Simulation.Instance.StepCallbacks.PostStepForward += OnPostStepForward;
+            // base.OnEnable();
         }
 
         /// <summary>
@@ -416,9 +420,15 @@ namespace PWRISimulator
         /// </summary>
         protected override void OnDisable()
         {
-            if (Simulation.HasInstance)
-                Simulation.Instance.StepCallbacks.PostStepForward -= OnPostStepForward;
+            if (_subscribed && _sim != null)
+            {
+                _sim.StepCallbacks.PostStepForward -= OnPostStepForward;
+            }
+            _sim = null; _subscribed = false;
             base.OnDisable();
+            // if (Simulation.HasInstance)
+            //     Simulation.Instance.StepCallbacks.PostStepForward -= OnPostStepForward;
+            // base.OnDisable();
         }
 
         /// <summary>
@@ -451,6 +461,8 @@ namespace PWRISimulator
             var soilSimulation = terrainNative.getSoilSimulationInterface();
             var granulars = soilSimulation.getSoilParticles();
             int granularsCount = (int)granulars.size();
+
+            //  Debug.Log("canMerge: " + canMerge);
 
             // 各粒子を反復
             for (int i = 0; i < granularsCount; ++i)
@@ -620,6 +632,19 @@ namespace PWRISimulator
                 previousDensity = density;
             }
         }
+
+        System.Collections.IEnumerator EnsureSubscribed()
+        {
+        while (!AGXUnity.Simulation.HasInstance) yield return null;
+        if (_subscribed && _sim == AGXUnity.Simulation.Instance) yield break;
+
+        if (_subscribed && _sim != null)
+            _sim.StepCallbacks.PostStepForward -= OnPostStepForward;
+
+        _sim = AGXUnity.Simulation.Instance;
+        _sim.StepCallbacks.PostStepForward += OnPostStepForward;
+        _subscribed = true;
+        }       
 
         #endregion
 

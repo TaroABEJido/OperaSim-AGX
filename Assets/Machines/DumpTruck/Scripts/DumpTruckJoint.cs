@@ -28,7 +28,7 @@ namespace PWRISimulator.ROS
 
             leftSprocket.constraint.Native.setEnableComputeForces(true);
             rightSprocket.constraint.Native.setEnableComputeForces(true);
-            //rotate_joint.constraint.Native.setEnableComputeForces(true);
+            // rotate_joint.constraint.Native.setEnableComputeForces(true);
             dump_joint.constraint.Native.setEnableComputeForces(true);
 
             input = gameObject.GetComponent<DumpTruckInput>();
