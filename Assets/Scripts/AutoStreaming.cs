@@ -51,8 +51,6 @@ namespace PWRISimulator
                 UnityEngine.Debug.LogError("CSH NULL");
             }
 
-
-
         }
 
         private void Update()
