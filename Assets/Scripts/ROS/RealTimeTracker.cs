@@ -162,8 +162,8 @@ namespace PWRISimulator.ROS
             }
             
             if (Math.Abs(skippedGameTime - skippedGameTimePrev) >= 1e-04)
-                Debug.Log($"{name} : Unity has skipped {skippedGameTime - skippedGameTimePrev: 0.####}s game time " +
-                          $"(at frame {Time.frameCount - 1}). Total skipped game time: {skippedGameTime: 0.####}s");
+                //Debug.Log($"{name} : Unity has skipped {skippedGameTime - skippedGameTimePrev: 0.####}s game time " +
+                //          $"(at frame {Time.frameCount - 1}). Total skipped game time: {skippedGameTime: 0.####}s");
 
             if (skippedGameTime - skippedGameTimePrev <= -1e-04)
                 Debug.LogError("Critical Timing Problem: SkippedGameTime has decreased.");

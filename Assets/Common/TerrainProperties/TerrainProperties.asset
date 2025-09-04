@@ -15,10 +15,12 @@ MonoBehaviour:
   m_soilMergeSpeedThreshold: 4
   m_soilParticleMergeRate: 9
   m_soilParticleLifeTime: Infinity
+  m_soilParticleSizeScaling: 1
   m_avalancheDecayFraction: 0.1
   m_avalancheMaxHeightGrowth: Infinity
+  m_deformationEnabled: 1
   m_createParticlesEnabled: 1
-  m_soilCompactionEnabled: 1
+  m_soilCompactionEnabled: 0
   m_deleteSoilParticlesOutsideBoundsEnabled: 1
   m_lockedBorderEnabled: 1
   m_avalanchingEnabled: 1

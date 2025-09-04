@@ -1,8 +1,9 @@
+using agx;
 using System.Collections;
 using System.Collections.Generic;
-using agx;
-using Unity.Robotics.ROSTCPConnector.MessageGeneration;
+using System.Diagnostics;
 using Unity.Robotics.ROSTCPConnector;
+using Unity.Robotics.ROSTCPConnector.MessageGeneration;
 using UnityEngine;
 
 namespace PWRISimulator.ROS
@@ -84,7 +85,8 @@ namespace PWRISimulator.ROS
         {
             double realTime = realTimeTracker.RealTime;
             if (realTimeTracker.printToLog)
-                Debug.Log($"OnReceivedMessage() realTime = {realTime}, msg = {MessageUtil.MessageToString(msg)}");
+                UnityEngine.Debug.Log($"OnReceivedMessage() realTime = {realTime}, msg = {MessageUtil.MessageToString(msg)}");
+
             realTimeBuffer.Add(msg, realTime);
         }
 
@@ -98,7 +100,7 @@ namespace PWRISimulator.ROS
             T msg = realTimeBuffer.Get(realTime);
 
             if (realTimeTracker.printToLog)
-                Debug.Log($"ExecuteMessageAction() time = {inputTime}, realTime = {realTime} " + 
+                UnityEngine.Debug.Log($"ExecuteMessageAction() time = {inputTime}, realTime = {realTime} " + 
                           $"msg = {MessageUtil.MessageToString(msg)}");
 
             if (msg != null)

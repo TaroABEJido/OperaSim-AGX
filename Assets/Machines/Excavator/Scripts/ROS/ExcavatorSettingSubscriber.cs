@@ -11,7 +11,8 @@ namespace PWRISimulator.ROS
     /// </summary>
     public class ExcavatorSettingSubscriber : MessageSubscriptionBase
     {
-        public bool EmergencyStopCmd {get; private set;}
+        //public bool EmergencyStopCmd {get; private set;}
+        public bool EmergencyStopCmd;
 
         readonly string EmergencyStopCmdPhrase = "/emg_stop_cmd";
         protected override void CreateSubscriptions()

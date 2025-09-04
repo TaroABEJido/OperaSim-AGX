@@ -12,36 +12,36 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e817ad767e5d7cb48bc672a10e654626, type: 3}
   m_Name: TerrainMaterial
   m_EditorClassIdentifier: 
-  m_presetName: dirt_1
+  m_presetName: sand_1
   m_density: 1474
-  m_maximumDensity: 2000
-  m_youngsModulus: 6500000
-  m_poissonsRatio: 0.15
-  m_frictionAngle: 39.980995
-  m_cohesion: 2100
-  m_dilatancyAngle: 12.988953
-  m_swellFactor: 1.28
+  m_maximumDensity: 1800
+  m_youngsModulus: 4500000
+  m_poissonsRatio: 0.1
+  m_frictionAngle: 39.001236
+  m_cohesion: 0
+  m_dilatancyAngle: 8.995438
+  m_swellFactor: 1
   m_hardeningConstantKE: 1
-  m_hardeningConstantNE: 0.0833
+  m_hardeningConstantNE: 0.5
   m_preconsolidationStress: 98000
   m_bankStatePhi: 0.6666
-  m_compressionIndex: 0.11
-  m_compactionTimeRelaxationConstant: 0.05
+  m_compressionIndex: 0.05
+  m_compactionTimeRelaxationConstant: 0.02
   m_stressCutOffFraction: 0.01
-  m_angleOfReposeCompactionRate: 24
+  m_angleOfReposeCompactionRate: 1
   m_particleYoungsModulus: 1e+9
   m_particleRestitution: 0
-  m_particleSurfaceFriction: 0.4
+  m_particleSurfaceFriction: 0.3
   m_particleRollingResistance: 0.1
-  m_particleCohesion: 2500
+  m_particleCohesion: 0
   m_particleTerrainYoungsModulus: 100000000
-  m_particleTerrainSurfaceFriction: 0.7
+  m_particleTerrainSurfaceFriction: 1
   m_particleTerrainRestitution: 0
-  m_particleTerrainRollingResistance: 0.7
-  m_particleTerrainCohesion: 2500
+  m_particleTerrainRollingResistance: 0.9
+  m_particleTerrainCohesion: 0
   m_maximumContactDepth: 1
   m_depthDecayFactor: 2
   m_depthIncreaseFactor: 1
   m_maximumAggregateNormalForce: Infinity
-  m_aggregateStiffnessMultiplier: 0.002
+  m_aggregateStiffnessMultiplier: 0.001
   m_excavationStiffnessMultiplier: 1
