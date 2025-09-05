@@ -190,9 +190,6 @@ namespace PWRISimulator
         // ParticleEmitterが開始から今まで生成した粒子の数。
         double emittedQuantity = 0.0;
 
-        // インスタンス監視用変数
-        AGXUnity.Simulation _sim; bool _subscribed;
-
         #endregion
 
         #region Public Methods
@@ -408,11 +405,8 @@ namespace PWRISimulator
         /// </summary>
         protected override void OnEnable()
         {
-            StartCoroutine(EnsureSubscribed());      // ← HasInstance が true になるまで待つ
+            Simulation.Instance.StepCallbacks.PostStepForward += OnPostStepForward;
             base.OnEnable();
-            // if (Simulation.HasInstance)
-            //     Simulation.Instance.StepCallbacks.PostStepForward += OnPostStepForward;
-            // base.OnEnable();
         }
 
         /// <summary>
@@ -420,15 +414,9 @@ namespace PWRISimulator
         /// </summary>
         protected override void OnDisable()
         {
-            if (_subscribed && _sim != null)
-            {
-                _sim.StepCallbacks.PostStepForward -= OnPostStepForward;
-            }
-            _sim = null; _subscribed = false;
+            if (Simulation.HasInstance)
+                Simulation.Instance.StepCallbacks.PostStepForward -= OnPostStepForward;
             base.OnDisable();
-            // if (Simulation.HasInstance)
-            //     Simulation.Instance.StepCallbacks.PostStepForward -= OnPostStepForward;
-            // base.OnDisable();
         }
 
         /// <summary>
@@ -631,20 +619,7 @@ namespace PWRISimulator
                 }
                 previousDensity = density;
             }
-        }
-
-        System.Collections.IEnumerator EnsureSubscribed()
-        {
-        while (!AGXUnity.Simulation.HasInstance) yield return null;
-        if (_subscribed && _sim == AGXUnity.Simulation.Instance) yield break;
-
-        if (_subscribed && _sim != null)
-            _sim.StepCallbacks.PostStepForward -= OnPostStepForward;
-
-        _sim = AGXUnity.Simulation.Instance;
-        _sim.StepCallbacks.PostStepForward += OnPostStepForward;
-        _subscribed = true;
-        }       
+        }  
 
         #endregion
 
