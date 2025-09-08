@@ -17,7 +17,7 @@ namespace PWRISimulator
         {
             if (deformableTerrain == null)
                 deformableTerrain = GetComponent<DeformableTerrain>();
-            
+
             for (int i = 0; i < deformableTerrain.Shovels.Length; i++)
             {
                 // 左右側面と背面を削減

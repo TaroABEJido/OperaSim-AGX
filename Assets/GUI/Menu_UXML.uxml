@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Assets/GUI/Menu.uss?fileID=7433441132597879392&amp;guid=e38f57cd6dce75545be8305da24eaaa2&amp;type=3#Menu" />
+    <ui:VisualElement name="MainMenu" style="flex-grow: 1; width: 265px; height: auto; -unity-font-style: bold; top: 30px; -unity-font: resource(&apos;Fonts/BIZUDPGothic-Regular&apos;); -unity-font-definition: initial; align-items: stretch; justify-content: flex-start; position: absolute;">
+        <ui:Button text="Dump truck Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="DunpTruckPositionSetting" style="-unity-font-style: bold; height: 27px; overflow: hidden;" />
+        <ui:Button text="Camera Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CameraPositionSetting" style="text-overflow: ellipsis; height: 26px;" />
+        <ui:Button text="Camera Selection" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SelectCamera" style="height: 29px;" />
+        <ui:Button text="Start Simulation" parse-escape-sequences="true" display-tooltip-when-elided="true" name="SimulationStart" style="height: 27px;" />
+    </ui:VisualElement>
+</ui:UXML>

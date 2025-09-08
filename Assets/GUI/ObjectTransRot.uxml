@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="ObjectTransRot" style="-unity-font: initial; -unity-font-style: bold; position: absolute; left: auto; bottom: 60px; width: 265px;">
+        <ui:Button text="Main Camera Settings" parse-escape-sequences="true" display-tooltip-when-elided="true" name="MainCameraSettings" style="width: auto; height: 27px;" />
+        <ui:Button text="Translation" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Translation" style="-unity-font-style: bold; width: auto; height: 27px;" />
+        <ui:Button text="Rotation" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Rotation" style="flex-grow: 1; width: auto; position: relative; left: auto; bottom: auto; height: 27px;" />
+        <ui:Button text="Delete" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Delete" style="width: auto; height: 27px;" />
+    </ui:VisualElement>
+</ui:UXML>

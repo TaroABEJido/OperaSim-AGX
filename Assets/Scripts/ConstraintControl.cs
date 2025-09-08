@@ -85,6 +85,11 @@ namespace PWRISimulator
         /// </summary>
         public void UpdateConstraintControl()
         {
+            //UnityEngine.Debug.Log("UpdateConstraintControl!");
+            //UnityEngine.Debug.Log(controlEnabled);
+            //UnityEngine.Debug.Log(controlType);
+
+
             if (!controlEnabled)
                 return;
 
@@ -95,7 +100,11 @@ namespace PWRISimulator
                 UpdateMaxForce();
 
             if (controlValue != controlValuePrev)
+            {
+                //UnityEngine.Debug.Log("controlValue:" + controlValue);
                 UpdateControlValue();
+
+            }
         }
 
         private ControlType? controlTypePrev = null;
@@ -143,7 +152,11 @@ namespace PWRISimulator
             {
                 case ControlType.Position:
                     if (lockController != null)
+                    {
+                        //UnityEngine.Debug.Log("lockController:" + controlValue);
+                        //UnityEngine.Debug.Log("controlValuePrev:" + controlValuePrev);
                         lockController.setPosition(controlValue);
+                    }
                     break;
                 case ControlType.Speed:
                     if (targetSpeedController != null)

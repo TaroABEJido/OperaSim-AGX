@@ -24,6 +24,9 @@ MonoBehaviour:
   m_penetrationDepthThreshold: 0.2
   m_penetrationForceScaling: 1
   m_maxPenetrationForce: Infinity
+  m_contactRegionThreshold:
+    m_overrideToggle: 0
+    m_overrideValue: 0.02
   m_removeContacts: 0
   m_primaryExcavationSettings:
     Enabled: 1

@@ -1,0 +1,5 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="Status" style="flex-grow: 1; -unity-text-align: middle-center; height: auto; width: auto; position: relative; left: auto;">
+        <ui:Label tabindex="-1" text="Mode" parse-escape-sequences="true" display-tooltip-when-elided="true" name="StatusLabel" style="width: auto; height: auto; white-space: nowrap; position: relative; top: 5px; font-size: 25px; -unity-font: resource(&apos;Fonts/BIZUDPGothic-Regular&apos;); -unity-font-definition: initial;" />
+    </ui:VisualElement>
+</ui:UXML>

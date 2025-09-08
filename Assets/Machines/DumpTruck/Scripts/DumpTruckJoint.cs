@@ -21,24 +21,33 @@ namespace PWRISimulator.ROS
         {
             bool success = base.Initialize();
 
-            RegisterConstraintControl(leftSprocket);
-            RegisterConstraintControl(rightSprocket);
-            RegisterConstraintControl(rotate_joint);
-            RegisterConstraintControl(dump_joint);
+            try
+            {
+                RegisterConstraintControl(leftSprocket);
+                RegisterConstraintControl(rightSprocket);
+                RegisterConstraintControl(rotate_joint);
+                RegisterConstraintControl(dump_joint);
 
-            leftSprocket.constraint.Native.setEnableComputeForces(true);
-            rightSprocket.constraint.Native.setEnableComputeForces(true);
-            //rotate_joint.constraint.Native.setEnableComputeForces(true);
-            dump_joint.constraint.Native.setEnableComputeForces(true);
+                leftSprocket.constraint.Native.setEnableComputeForces(true);
+                rightSprocket.constraint.Native.setEnableComputeForces(true);
+                //rotate_joint.constraint.Native.setEnableComputeForces(true);
+                dump_joint.constraint.Native.setEnableComputeForces(true);
+
+            }
+            catch { }
 
             input = gameObject.GetComponent<DumpTruckInput>();
+
 
             return success;
         }
         protected override void RequestCommands()
         {
             //base.RequestCommands();
-            input.SetCommands();
+            if (input != null)
+            {
+                input.SetCommands();
+            }
         }
     }
     

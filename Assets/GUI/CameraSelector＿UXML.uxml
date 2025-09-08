@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <ui:VisualElement name="VisualElement" style="flex-grow: 1; align-items: stretch; align-self: stretch; justify-content: flex-start; position: absolute; top: auto; flex-direction: column;">
+        <ui:Button text="Done" parse-escape-sequences="true" display-tooltip-when-elided="true" name="CameraSetButton" style="width: 200px; height: 10px; -unity-font: resource(&apos;Fonts/BIZUDPGothic-Regular&apos;); -unity-font-definition: initial; -unity-font-style: bold; position: absolute; top: 30px; align-items: flex-start; align-self: flex-start; overflow: visible;" />
+        <ui:VisualElement name="CameraList" style="flex-grow: 1; position: absolute; top: 70px; width: 208px; height: 240px; background-color: rgba(204, 196, 196, 0.39); margin-right: 0; margin-left: 0; padding-left: 0; left: 0;" />
+    </ui:VisualElement>
+</ui:UXML>

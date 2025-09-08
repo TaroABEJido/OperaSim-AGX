@@ -1,0 +1,87 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2078516463575176478
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6373594740736010371}
+  - component: {fileID: 82746090824763390}
+  m_Layer: 0
+  m_Name: AGXUnity.ContactMaterialManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6373594740736010371
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078516463575176478}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &82746090824763390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2078516463575176478}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c061fdc43e36bb40ad5a8efc08ce6a9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_contactMaterials:
+  - ContactMaterial: {fileID: 11400000, guid: ed05e4ee02133eb4087447a902cef9a2, type: 2}
+    m_isOriented: 1
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: 97ae3feb5d2b6674396a0ea04be718ed, type: 2}
+    m_isOriented: 0
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: 0918c4f0f39db074996223df4f73098a, type: 2}
+    m_isOriented: 1
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: 1f27f769367476547b70bceb333a242f, type: 2}
+    m_isOriented: 0
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: ee1e1bbd93d5744409c3b41c9ab9e1f4, type: 2}
+    m_isOriented: 1
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: 137a8ee9914b3cb479b888f0ab1e0afa, type: 2}
+    m_isOriented: 0
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: c070bdcadd3717347a5c596661a2864b, type: 2}
+    m_isOriented: 0
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: 2b5f1f3d76c4dc84ea568adf5fab6870, type: 2}
+    m_isOriented: 0
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: 2c1532c9f14aae34a83ec8f2e4ad5b8e, type: 2}
+    m_isOriented: 0
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
+  - ContactMaterial: {fileID: 11400000, guid: 8c46f333c61b04740bc25b62cf35165a, type: 2}
+    m_isOriented: 0
+    m_referenceObject: {fileID: 0}
+    m_primaryDirection: 0
