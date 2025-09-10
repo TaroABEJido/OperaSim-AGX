@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 453132461}
-  m_IndirectSpecularColor: {r: 0.505915, g: 0.52408594, b: 0.5369582, a: 1}
+  m_IndirectSpecularColor: {r: 0.5058982, g: 0.52407897, b: 0.5369262, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -7825,7 +7825,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &196977360
 Transform:
   m_ObjectHideFlags: 0
@@ -7898,9 +7898,9 @@ MonoBehaviour:
     actuator:
       constraint: {fileID: 1716965543}
       controlEnabled: 1
-      controlType: 1
+      controlType: 0
       controlValue: 0
-      controlMaxForce: 10000
+      controlMaxForce: 1000000
     hydraulicActuator:
       constraint: {fileID: 1716965543}
       actuatorType: 1
@@ -7916,7 +7916,7 @@ MonoBehaviour:
     actuator:
       constraint: {fileID: 1893525218}
       controlEnabled: 1
-      controlType: 1
+      controlType: 0
       controlValue: 0
       controlMaxForce: 500000
     hydraulicActuator:
@@ -7934,7 +7934,7 @@ MonoBehaviour:
     actuator:
       constraint: {fileID: 984792389}
       controlEnabled: 1
-      controlType: 1
+      controlType: 0
       controlValue: 0
       controlMaxForce: 500000
     hydraulicActuator:
@@ -7952,7 +7952,7 @@ MonoBehaviour:
     actuator:
       constraint: {fileID: 1736900336}
       controlEnabled: 1
-      controlType: 1
+      controlType: 0
       controlValue: 0
       controlMaxForce: 500000
     hydraulicActuator:
@@ -8110,7 +8110,7 @@ MonoBehaviour:
   trackSubscriber: {fileID: 196977365}
   settingSubscriber: {fileID: 196977364}
   movementControlType: 1
-  controlType: 1
+  controlType: 0
   boomCylConv: {fileID: 196977369}
   armCylConv: {fileID: 196977368}
   bucketCylConv: {fileID: 196977367}
@@ -20418,50 +20418,6 @@ MonoBehaviour:
     m_userValue: {x: -0, y: 0, z: 0}
   m_massCoefficients: {x: 0, y: 0, z: 0}
   m_inertiaCoefficients: {x: 0, y: 0, z: 0}
---- !u!1 &531384863
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 531384865}
-  - component: {fileID: 531384864}
-  m_Layer: 0
-  m_Name: AGXUnity.RuntimeObjects
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &531384864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 531384863}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 5b6a9e4af77e3804aae97d5030ab5f9c, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
---- !u!4 &531384865
-Transform:
-  m_ObjectHideFlags: 8
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 531384863}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!4 &532686709 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 457fe421e1b07b0408fa351aaa348e86, type: 3}
@@ -28755,7 +28711,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &738989125
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38201,6 +38157,50 @@ MonoBehaviour:
     m_parent: {fileID: 995269697}
     m_localPosition: {x: 0, y: 0, z: 0}
     m_localRotation: {x: -0.000000029802326, y: 0.70710677, z: -0.00000002980232, w: 0.7071069}
+--- !u!1 &996539982
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 996539984}
+  - component: {fileID: 996539983}
+  m_Layer: 0
+  m_Name: AGXUnity.RuntimeObjects
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &996539983
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996539982}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5b6a9e4af77e3804aae97d5030ab5f9c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!4 &996539984
+Transform:
+  m_ObjectHideFlags: 8
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 996539982}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &997251919
 GameObject:
   m_ObjectHideFlags: 0
@@ -79018,4 +79018,4 @@ SceneRoots:
   - {fileID: 2117365227}
   - {fileID: 1109481783}
   - {fileID: 1301564170}
-  - {fileID: 531384865}
+  - {fileID: 996539984}
