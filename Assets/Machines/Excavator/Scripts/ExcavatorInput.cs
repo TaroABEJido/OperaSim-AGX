@@ -25,13 +25,17 @@ namespace PWRISimulator.ROS
         // for Twist Command
         public TrackTwistCommandConvertor twistCommandConvertor;
 
-        private 
+        // Mapping for joint_name → index num 
+        private readonly Dictionary<string, int> _frontIndexMap = new Dictionary<string, int>(System.StringComparer.Ordinal);
+        private const string JOINT_BUCKET = "bucket_joint";
+        private const string JOINT_ARM    = "arm_joint";
+        private const string JOINT_BOOM   = "boom_joint";
+        private const string JOINT_SWING  = "swing_joint";
 
         void Start()
         {
             joints = gameObject.GetComponent<ExcavatorJoints>();
         }
-        // Update is called once per frame
         void FixedUpdate()
         {
             // 受信
@@ -40,6 +44,40 @@ namespace PWRISimulator.ROS
             frontSubscriber.ExecuteSubscriptionHandlerActions(currentTime);
             trackSubscriber.ExecuteSubscriptionHandlerActions(currentTime);
             settingSubscriber.ExecuteSubscriptionHandlerActions(currentTime);
+
+            BuildFrontJointIndexMap();
+        }
+
+        // Making a map (Dictionary) of Front_cmd's joint_name <-> position/velocity/effort
+        private void BuildFrontJointIndexMap()
+        {
+            var msg = frontSubscriber?.FrontCmd;
+            if (msg == null || msg.joint_name == null) return;
+
+            _frontIndexMap.Clear();
+            for (int i = 0; i < msg.joint_name.Length; i++)
+            {
+                var name = msg.joint_name[i];
+                if (string.IsNullOrEmpty(name)) continue;
+                if (!_frontIndexMap.ContainsKey(name))
+                    _frontIndexMap.Add(name, i);
+            }
+        }
+
+        // Get the position/velocity/effort corresponding to joint_name in front_cmd
+        private bool TryGetJointValue(double[] arr, string jointName, out double value)
+        {
+            value = 0.0;
+            if (arr == null) return false;
+            if (_frontIndexMap.TryGetValue(jointName, out int idx))
+            {
+                if (idx >= 0 && idx < arr.Length)
+                {
+                    value = arr[idx];
+                    return true;
+                }
+            }
+            return false;
         }
 
         public void SetCommands()
@@ -68,60 +106,91 @@ namespace PWRISimulator.ROS
             }
             else
             {
+                var cmd = frontSubscriber.FrontCmd;
                 // 上部旋回体
                 switch (controlType)
                 {
-                    case ControlType.Position:  
-                        joints.bucketTilt.actuator.controlType = ControlType.Position;
-                        joints.bucketTilt.actuator.controlValue = bucketCylConv.CalculateCylinderRodTelescoping((float)frontSubscriber.FrontCmd.position[0]);
+                    case ControlType.Position:
+                        if (TryGetJointValue(cmd.position, JOINT_BUCKET, out double bucketPos))
+                        {
+                            joints.bucketTilt.actuator.controlType = ControlType.Position;
+                            joints.bucketTilt.actuator.controlValue = bucketCylConv.CalculateCylinderRodTelescoping((float)bucketPos);
+                        }
 
-                        joints.armTilt.actuator.controlType = ControlType.Position;
-                        joints.armTilt.actuator.controlValue = armCylConv.CalculateCylinderRodTelescoping((float)frontSubscriber.FrontCmd.position[1]);
+                        if (TryGetJointValue(cmd.position, JOINT_ARM, out double armPos))
+                        {
+                            joints.armTilt.actuator.controlType = ControlType.Position;
+                            joints.armTilt.actuator.controlValue = armCylConv.CalculateCylinderRodTelescoping((float)armPos);
+                        }
 
-                        joints.boomTilt.actuator.controlType = ControlType.Position;
-                        joints.boomTilt.actuator.controlValue = boomCylConv.CalculateCylinderRodTelescoping((float)frontSubscriber.FrontCmd.position[2]);
+                        if (TryGetJointValue(cmd.position, JOINT_BOOM, out double boomPos))
+                        {
+                            joints.boomTilt.actuator.controlType = ControlType.Position;
+                            joints.boomTilt.actuator.controlValue = boomCylConv.CalculateCylinderRodTelescoping((float)boomPos);
+                        }
 
-                        joints.swing.actuator.controlType = ControlType.Position;
-                        joints.swing.actuator.controlValue = frontSubscriber.FrontCmd.position[3];
+                        if (TryGetJointValue(cmd.position, JOINT_SWING, out double swingPos))
+                        {
+                            joints.swing.actuator.controlType = ControlType.Position;
+                            joints.swing.actuator.controlValue = swingPos;
+                        }
                         break;
                     case ControlType.Speed:
-                        joints.bucketTilt.actuator.controlType = ControlType.Speed;
-                        joints.bucketTilt.actuator.controlValue = bucketCylConv.CalculateCylinderRodTelescopingVelocity((float)frontSubscriber.FrontCmd.velocity[3]);
-
-                        joints.armTilt.actuator.controlType = ControlType.Speed;
-                        joints.armTilt.actuator.controlValue = armCylConv.CalculateCylinderRodTelescopingVelocity((float)frontSubscriber.FrontCmd.velocity[2]);
-
-                        joints.boomTilt.actuator.controlType = ControlType.Speed;
-                        joints.boomTilt.actuator.controlValue = boomCylConv.CalculateCylinderRodTelescopingVelocity((float)frontSubscriber.FrontCmd.velocity[1]);
-
-                        joints.swing.actuator.controlType = ControlType.Speed;
-                        double vel = frontSubscriber.FrontCmd.velocity[0];
-                        if (vel > 0) 
+                        if (TryGetJointValue(cmd.velocity, JOINT_BUCKET, out double bucketVel))
                         {
-                            joints.swing.actuator.controlValue = vel * 0.52;
+                            joints.bucketTilt.actuator.controlType = ControlType.Speed;
+                            joints.bucketTilt.actuator.controlValue = bucketCylConv.CalculateCylinderRodTelescopingVelocity((float)bucketVel);
                         }
-                        else
+
+                        if (TryGetJointValue(cmd.velocity, JOINT_ARM, out double armVel))
                         {
-                            joints.swing.actuator.controlValue = vel;
+                            joints.armTilt.actuator.controlType = ControlType.Speed;
+                            joints.armTilt.actuator.controlValue = armCylConv.CalculateCylinderRodTelescopingVelocity((float)armVel);
+                        }
+
+                        if (TryGetJointValue(cmd.velocity, JOINT_BOOM, out double boomVel))
+                        {
+                            joints.boomTilt.actuator.controlType = ControlType.Speed;
+                            joints.boomTilt.actuator.controlValue = boomCylConv.CalculateCylinderRodTelescopingVelocity((float)boomVel);
+                        }
+
+                        if (TryGetJointValue(cmd.velocity, JOINT_SWING, out double swingVel))
+                        {
+                            joints.swing.actuator.controlType = ControlType.Speed;
+                            // 既存ロジック踏襲: 正方向のみ0.52倍
+                            joints.swing.actuator.controlValue = (swingVel > 0.0) ? (swingVel * 0.52) : swingVel;
                         }
                         break;
                     case ControlType.Force:
-                        joints.bucketTilt.actuator.controlType = ControlType.Force;
-                        joints.bucketTilt.actuator.controlValue = bucketCylConv.CalculateCylinderRodTelescopingForce((float)frontSubscriber.FrontCmd.effort[0]);
+                        if (TryGetJointValue(cmd.effort, JOINT_BUCKET, out double bucketEff))
+                        {
+                            joints.bucketTilt.actuator.controlType = ControlType.Force;
+                            joints.bucketTilt.actuator.controlValue = bucketCylConv.CalculateCylinderRodTelescopingForce((float)bucketEff);
+                        }
 
-                        joints.armTilt.actuator.controlType = ControlType.Force;
-                        joints.armTilt.actuator.controlValue = armCylConv.CalculateCylinderRodTelescopingForce((float)frontSubscriber.FrontCmd.effort[1]);
+                        if (TryGetJointValue(cmd.effort, JOINT_ARM, out double armEff))
+                        {
+                            joints.armTilt.actuator.controlType = ControlType.Force;
+                            joints.armTilt.actuator.controlValue = armCylConv.CalculateCylinderRodTelescopingForce((float)armEff);
+                        }
 
-                        joints.boomTilt.actuator.controlType = ControlType.Force;
-                        joints.boomTilt.actuator.controlValue = boomCylConv.CalculateCylinderRodTelescopingForce((float)frontSubscriber.FrontCmd.effort[2]);
+                        if (TryGetJointValue(cmd.effort, JOINT_BOOM, out double boomEff))
+                        {
+                            joints.boomTilt.actuator.controlType = ControlType.Force;
+                            joints.boomTilt.actuator.controlValue = boomCylConv.CalculateCylinderRodTelescopingForce((float)boomEff);
+                        }
 
-                        joints.swing.actuator.controlType = ControlType.Force;
-                        joints.swing.actuator.controlValue = frontSubscriber.FrontCmd.effort[3];
+                        if (TryGetJointValue(cmd.effort, JOINT_SWING, out double swingEff))
+                        {
+                            joints.swing.actuator.controlType = ControlType.Force;
+                            joints.swing.actuator.controlValue = swingEff;
+                        }
                         break;
                     default:
                         break;
                 }
-                // 下部走行体
+
+                // 下部走行体（従来処理のまま）
                 switch (movementControlType)
                 {
                     case ConstractionMovementControlType.ActuatorCommand:
