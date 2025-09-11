@@ -11,6 +11,9 @@ using UnityEngine.Rendering;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// 配置用カメラオブジェクト生成処理
+    /// </summary>
     public class cameraObj
     {
         public RenderTexture cameraTexture;
@@ -53,7 +56,6 @@ namespace PWRISimulator
 
             var subdisp = GameObject.Find("SubdisplayForSpawnCamera");
             if (subdisp != null) {
-                Debug.Log("test");
                 //subdisp.GetComponent<Subdisplay>().SetDisplay(camera_pref.transform.Find("Camera").gameObject.GetComponent<Camera>());
                 subdisp.GetComponent<Subdisplay>().SetDisplay(camera_pref.transform.Find("CameraStr").Find("Camera").gameObject.GetComponent<Camera>());
             }

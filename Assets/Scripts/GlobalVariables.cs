@@ -10,6 +10,9 @@ using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// グローバル変数管理
+    /// </summary>
     public class GlobalVariables
     {
         // add 202507
@@ -26,11 +29,12 @@ namespace PWRISimulator
         public static bool SetupJointCompletedFlag = false;
         public static bool SetupJointDumpCompletedFlag = false;
 
-        public static UIcontrol.SaveMachines saveMachines = new UIcontrol.SaveMachines();
-        public static UIcontrol.SaveDumpSoil saveDumpSoil = new UIcontrol.SaveDumpSoil();
-        public static UIcontrol.SaveParticles saveParticles = new UIcontrol.SaveParticles();
+        public static saveScript.SaveMachines saveMachines = new saveScript.SaveMachines();
+        public static saveScript.SaveDumpSoil saveDumpSoil = new saveScript.SaveDumpSoil();
+        public static saveScript.SaveParticles saveParticles = new saveScript.SaveParticles();
 
         //public static bool ObjectRemoveFlag = false;
+        public static int ConfirmWaitFlag = 0; // 0: 初期値、1：確認画面表示中、2：確認画面OKクリック
 
 
         // ファイル出力時のフォルダパス
@@ -160,7 +164,7 @@ namespace PWRISimulator
         public static int ic120Counter = 0;
         public static int CameraCounter = 0;
 
-        public static bool ForceCameraChabge = false;
+        public static bool ForceCameraChange = false;
 
         private static Mutex _mutexScore = new Mutex();
         private static Mutex _mutexOOFAT = new Mutex();

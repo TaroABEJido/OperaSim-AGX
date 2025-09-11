@@ -83815,6 +83815,10 @@ PrefabInstance:
       propertyPath: m_centerOfMassOffset.m_defaultValue.z
       value: -0.01099968
       objectReference: {fileID: 0}
+    - target: {fileID: 5675722302483674826, guid: ab09d390d37570f4a912694186e44d9b, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6907077907001403058, guid: ab09d390d37570f4a912694186e44d9b, type: 3}
       propertyPath: m_Name
       value: ic120_prefVar

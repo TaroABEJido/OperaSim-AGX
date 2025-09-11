@@ -223,41 +223,91 @@ namespace RuntimeGizmos
 
 					if (targetRootsOrdered[0].gameObject.name.Contains("ic120_") == true || targetRootsOrdered[0].gameObject.name.Contains("Camera_") == true)
 					{
-                        ConfirmDialog.targetObject = targetRootsOrdered[0].gameObject;
-
-						if (ConfirmDaialogUI == null)
+						if (GlobalVariables.ConfirmWaitFlag == 0)
 						{
-							ConfirmDaialogUI = Resources.Load<GameObject>("Prefabs/ConfirmDialog");
+							GlobalVariables.ConfirmWaitFlag = 1;
+
+                            //ConfirmDialog.targetObject = targetRootsOrdered[0].gameObject;
+                            GameObject trg = targetRootsOrdered[0].gameObject;
+
+                            if (ConfirmDaialogUI == null)
+							{
+								ConfirmDaialogUI = Resources.Load<GameObject>("Prefabs/ConfirmDialog");
+							}
+
+							if (ConfirmDaialogUIobj == null)
+							{
+								ConfirmDaialogUIobj = Instantiate(ConfirmDaialogUI);
+							}
+
+							_uiConfirmDaialogDocument = ConfirmDaialogUIobj.GetComponent<UIDocument>();
+
+							var root = _uiConfirmDaialogDocument.rootVisualElement;
+							root.Q<UnityEngine.UIElements.Label>("Title").text = "Confirm";
+							root.Q<UnityEngine.UIElements.Label>("Message").text = "Delete the object.\nAre you sure?";
+
+							ClearTargets();
+
+							// コルーチンの実行  
+							StartCoroutine(DeleteCoroutine(trg));
 						}
-
-						if (ConfirmDaialogUIobj == null)
-						{
-							ConfirmDaialogUIobj = Instantiate(ConfirmDaialogUI);
-						}
-
-						_uiConfirmDaialogDocument = ConfirmDaialogUIobj.GetComponent<UIDocument>();
-
-						var root = _uiConfirmDaialogDocument.rootVisualElement;
-						root.Q<UnityEngine.UIElements.Label>("Title").text = "Confirm";
-						root.Q<UnityEngine.UIElements.Label>("Message").text = "Delete the object.\nAre you sure?";
-
-                        ClearTargets();
                     }
 				}
 			}
         }
 
+		IEnumerator DeleteCoroutine(GameObject targetObject)
+		{
+			Debug.Log("GlobalVariables.ConfirmWaitFlag: " + GlobalVariables.ConfirmWaitFlag);
+			yield return new WaitUntil(() => (GlobalVariables.ConfirmWaitFlag != 1));
+
+			if (GlobalVariables.ConfirmWaitFlag == 2)
+			{
+                if (targetObject.name.Contains("ic120_") == true)
+                {
+                    GlobalVariables.ic120Counter = GlobalVariables.ic120Counter - 1;
+
+                    int length = targetObject.name.LastIndexOf("_");
+                    string id = targetObject.name.Substring(length + 1);
+
+                    // リストから削除
+                    GlobalVariables.Dump_IDList.Remove(id);
+                    GlobalVariables.Dump_ObjList.Remove(targetObject);
+
+                    Destroy(targetObject);
+                    GameObject objMassBody = GameObject.Find(targetObject.name + "_SoilMassBody");
+                    if (objMassBody != null) Destroy(objMassBody);
+                    GameObject objMassJoint = GameObject.Find(targetObject.name + "_SoilMassJoint");
+                    if (objMassJoint != null) Destroy(objMassJoint);
+
+                    //Debug.Log("id: " + id);
+                    //Debug.Log("Dump_IDList.Count: " + GlobalVariables.Dump_IDList.Count);
+                    //Debug.Log("Dump_ObjList.Count: " + GlobalVariables.Dump_ObjList.Count);
+                }
+                else if (targetObject.name.Contains("Camera_") == true)
+                {
+                    Destroy(targetObject);
+                    GlobalVariables.CameraCounter = GlobalVariables.CameraCounter - 1;
+                }
+
+				GlobalVariables.ConfirmWaitFlag = 0;
+            }
+		}
+
+
 		void LateUpdate()
 		{
-			if(mainTargetRoot == null) return;
+			if (mainTargetRoot == null) return;
 
 			//We run this in lateupdate since coroutines run after update and we want our gizmos to have the updated target transform position after TransformSelected()
 			SetAxisInfo();
-			
-			if(manuallyHandleGizmo)
+
+			if (manuallyHandleGizmo)
 			{
-				if(onDrawCustomGizmo != null) onDrawCustomGizmo();
-			}else{
+				if (onDrawCustomGizmo != null) onDrawCustomGizmo();
+			}
+			else
+			{
 				SetLines();
 			}
 		}
@@ -678,22 +728,30 @@ namespace RuntimeGizmos
 			//{
 			//    GameObject.Find(targetRootsOrdered[0].name + "/base_link/track_link").SetActive(true);
 			//}
-			if (targetRootsOrdered[0].name.Contains("ic120_") == true ){
-                ClearAndAddTarget(targetRootsOrdered[0]);
-                ic120obj spic120 = new ic120obj();
-                spic120.ReSpawn_ic120(targetRootsOrdered[0].gameObject, "Prefabs/ic120_prefVar");
-                Destroy(targetRootsOrdered[0].gameObject);
-                spic120 = null;
-            }else if (targetRootsOrdered[0].name.Contains("zx200_") == true)
-            {
-                ClearAndAddTarget(targetRootsOrdered[0]);
-                zx200obj spzx200 = new zx200obj();
-                spzx200.ReSpawn_zx200(targetRootsOrdered[0].gameObject, "Prefabs/zx200_prefVar");
-                Destroy(targetRootsOrdered[0].gameObject);
-                spzx200 = null;
-            }
+			if (targetRootsOrdered[0].name.Contains("ic120_") == true)
+			{
+				ClearAndAddTarget(targetRootsOrdered[0]);
+				ic120obj spic120 = new ic120obj();
+				spic120.ReSpawn_ic120(targetRootsOrdered[0].gameObject, "Prefabs/ic120_prefVar");
 
+				int length = targetRootsOrdered[0].gameObject.name.LastIndexOf("_");
+				string id = targetRootsOrdered[0].gameObject.name.Substring(length + 1);
 
+				// リストから削除
+				GlobalVariables.Dump_IDList.Remove(id);
+				GlobalVariables.Dump_ObjList.Remove(targetRootsOrdered[0].gameObject);
+
+				Destroy(targetRootsOrdered[0].gameObject);
+				spic120 = null;
+			}
+			else if (targetRootsOrdered[0].name.Contains("zx200_") == true)
+			{
+				ClearAndAddTarget(targetRootsOrdered[0]);
+				zx200obj spzx200 = new zx200obj();
+				spzx200.ReSpawn_zx200(targetRootsOrdered[0].gameObject, "Prefabs/zx200_prefVar");
+				Destroy(targetRootsOrdered[0].gameObject);
+				spzx200 = null;
+			}
         }
 
         float CalculateSnapAmount(float snapValue, float currentAmount, out float remainder)
@@ -790,7 +848,13 @@ namespace RuntimeGizmos
 						return;
 
 					}
-					else if (GlobalVariables.ActionMode == 1 && target.gameObject.name.Contains("Camera_") == false)
+					else if (GlobalVariables.ActionMode == 0 && target.gameObject.name.Contains("zx200_") == true && GlobalVariables.SetMoveType == 2) // Delete 押下時は選択クリア
+					{
+                        ClearTargets();
+                        GlobalVariables.CameraSelected = false;
+                        return;
+                    }
+                    else if (GlobalVariables.ActionMode == 1 && target.gameObject.name.Contains("Camera_") == false)
 					{
 						ClearTargets();
 						GlobalVariables.CameraSelected = false;
@@ -810,47 +874,45 @@ namespace RuntimeGizmos
 						{
 							//Debug.Log("test");
 							//20250829 subdisp.GetComponent<Subdisplay>().SetDisplay(target.Find("Camera").gameObject.GetComponent<Camera>());
-                            subdisp.GetComponent<Subdisplay>().SetDisplay(target.Find("CameraStr/Camera").gameObject.GetComponent<Camera>());
-                        }
+							subdisp.GetComponent<Subdisplay>().SetDisplay(target.Find("CameraStr/Camera").gameObject.GetComponent<Camera>());
+						}
 
 					}
-                    else if (GlobalVariables.ActionMode == 0 && target.gameObject.name.Contains("ic120_") == true)
-                    {
-                        GlobalVariables.CameraSelected = true;
+					else if (GlobalVariables.ActionMode == 0 && target.gameObject.name.Contains("ic120_") == true)
+					{
+						GlobalVariables.CameraSelected = true;
 
-                        var subdisp = GameObject.Find("SubdisplayForSpawnCamera");
-                        if (subdisp != null)
-                        {
-                            target.Find("base_link/track_link/CameraStr").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
-                            target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
-                            subdisp.GetComponent<Subdisplay>().SetDisplay(target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>());
-                        }
+						var subdisp = GameObject.Find("SubdisplayForSpawnCamera");
+						if (subdisp != null)
+						{
+							target.Find("base_link/track_link/CameraStr").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
+							target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
+							subdisp.GetComponent<Subdisplay>().SetDisplay(target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>());
+						}
 
-                        machineObj.machineDeselected();
-                        machineObj.machineSelected(target.gameObject.name);
-                    }
-                    else if (GlobalVariables.ActionMode == 0 && target.gameObject.name.Contains("zx200_") == true)
-                    {
-                        GlobalVariables.CameraSelected = true;
-                        UnityEngine.Debug.Log("CameraSelected");
-                        UnityEngine.Debug.Log(GlobalVariables.CameraSelected);
+						machineObj.machineDeselected();
+						machineObj.machineSelected(target.gameObject.name);
+					}
+					else if (GlobalVariables.ActionMode == 0 && target.gameObject.name.Contains("zx200_") == true)
+					{
+						GlobalVariables.CameraSelected = true;
+						UnityEngine.Debug.Log("CameraSelected");
+						UnityEngine.Debug.Log(GlobalVariables.CameraSelected);
 
-                        var subdisp = GameObject.Find("SubdisplayForSpawnCamera");
-                        if (subdisp != null)
-                        {
-                            Debug.Log("test");
+						var subdisp = GameObject.Find("SubdisplayForSpawnCamera");
+						if (subdisp != null)
+						{
+							target.Find("base_link/track_link/CameraStr").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
+							target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
+							subdisp.GetComponent<Subdisplay>().SetDisplay(target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>());
+						}
 
-                            target.Find("base_link/track_link/CameraStr").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
-                            target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>().gameObject.SetActive(true);
-                            subdisp.GetComponent<Subdisplay>().SetDisplay(target.Find("base_link/track_link/CameraStr/Camera").gameObject.GetComponent<Camera>());
-                        }
+						UnityEngine.Debug.Log("********************************************");
 
-                        UnityEngine.Debug.Log("********************************************");
+						machineObj.machineDeselected();
+						machineObj.machineSelected(target.gameObject.name);
 
-                        machineObj.machineDeselected();
-                        machineObj.machineSelected(target.gameObject.name);
-
-                    }
+					}
 
                     GlobalVariables.CameraSelected = true;
 

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using UnityEngine;
 using Debug = UnityEngine.Debug;
 using Vector3 = UnityEngine.Vector3;
@@ -18,6 +19,9 @@ using Vector3 = UnityEngine.Vector3;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ステージのスコアリング処理
+    /// </summary>
     public class TerrainScore : MonoBehaviour
     {
         // エリア判定用の画像パス
@@ -70,6 +74,8 @@ namespace PWRISimulator
         private double curt_dmpSum_margin;
         private double prev_dmpDiff_margin;
 
+
+        public static bool resetFlag;
 
 
         // スコア積算
@@ -300,6 +306,12 @@ namespace PWRISimulator
         }
 
 
+        public static void Reset()
+        {
+            resetFlag = true;
+        }
+
+
         // Start is called before the first frame update
         void Start()
         {
@@ -416,6 +428,68 @@ namespace PWRISimulator
             int t_resolution = terrainData.heightmapResolution;
 
 
+            if (resetFlag)
+            {
+                //---------------
+                // エリアのスコアリング初期設定
+                //---------------
+                // 掘削エリアと放⼟エリアを除いたエリア
+                sumScore = 0.0;
+                // 掘削エリア
+                excScore = 0.0;
+                // 放土エリア
+                dmpScore = 0.0;
+
+                init_sum = 0.0;
+                curt_sum = 0.0;
+                prev_sumDiff = 0.0;
+
+                init_excSum = 0.0;
+                curt_excSum = 0.0;
+                prev_excDiff = 0.0;
+
+                init_dmpSum = 0.0;
+                curt_dmpSum = 0.0;
+                prev_dmpDiff = 0.0;
+
+                init_dmpSum_margin = 0.0;
+                curt_dmpSum_margin = 0.0;
+                //prev_dmpDiff_margin = 0.0;
+
+
+                terrain = FindObjectOfType<DeformableTerrain>();
+
+                //---------------
+                // スコアリングのため初期状態保持
+                //---------------
+                double _sum = 0.0;
+
+                // Heightmap
+                float[,] _curt_heights = terrainData.GetHeights(0, 0, t_resolution, t_resolution);
+
+                var _mat = MathNet.Numerics.LinearAlgebra.Matrix<float>.Build.DenseOfArray(_curt_heights);
+
+                _sum = _mat.Enumerate().Sum();
+                //Debug.Log("sum: " + sum);
+
+                // 掘削エリアのHeightmap行列のSum取得
+                init_excSum = calcSumExcArea(_mat);
+
+                // 放土エリアのHeightmap行列のSum取得
+                init_dmpSum = calcSumDmpArea(_mat);
+
+                // 放土エリアのマージン
+                init_dmpSum_margin = calcSumDmpAreaMargin(_mat) - init_dmpSum;
+
+
+                // 掘削エリアと放土エリアを除いたHeightmap行列のSum取得
+                init_sum = _sum - init_excSum - init_dmpSum;
+
+
+                resetFlag = false;
+            }
+
+
             //---------------
             // スコアリングのため現在の状態を取得し比較
             //---------------
@@ -453,7 +527,7 @@ namespace PWRISimulator
 
             // スコア計算
             double excDiff = curt_excSum - init_excSum;
-            Debug.Log("excDiff: " + excDiff + ", curt_excSum: " + curt_excSum + ", init_excSum: " + init_excSum);
+            //Debug.Log("excDiff: " + excDiff + ", curt_excSum: " + curt_excSum + ", init_excSum: " + init_excSum);
 
             if (excDiff < 0.0 && excDiff < prev_excDiff)
             {
@@ -478,9 +552,9 @@ namespace PWRISimulator
 
 
             double dmpDiff = curt_dmpSum - init_dmpSum;
-            Debug.Log("dmpDiff: " + dmpDiff + ", curt_dmpSum: " + curt_dmpSum + ", init_dmpSum: " + init_dmpSum);
+            //Debug.Log("dmpDiff: " + dmpDiff + ", curt_dmpSum: " + curt_dmpSum + ", init_dmpSum: " + init_dmpSum);
 
-            Debug.Log("curt_dmpSum_margin: " + curt_dmpSum_margin + ", init_dmpSum_margin: " + init_dmpSum_margin);
+            //Debug.Log("curt_dmpSum_margin: " + curt_dmpSum_margin + ", init_dmpSum_margin: " + init_dmpSum_margin);
 
 
             if (dmpDiff > 0.0 && dmpDiff > prev_dmpDiff && init_dmpSum_margin - curt_dmpSum_margin <= 0)
@@ -489,7 +563,7 @@ namespace PWRISimulator
                 //dmpScore += GlobalVariables.UnloadSoilCoef * Math.Abs(dmpDiff) / 0.1;
                 dmpScore += GlobalVariables.UnloadSoilCoef * Math.Abs(_diff);
 
-                Debug.Log("_diff: " + _diff + ", dmpDiff: " + dmpDiff + ", prev_dmpDiff: " + prev_dmpDiff);
+                //Debug.Log("_diff: " + _diff + ", dmpDiff: " + dmpDiff + ", prev_dmpDiff: " + prev_dmpDiff);
 
                 //Debug.Log("***** dmpScore: " + dmpScore);
 

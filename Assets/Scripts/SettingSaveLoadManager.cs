@@ -10,6 +10,9 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// 設定ファイルのセーブ・ロード処理
+    /// </summary>
     public class SettingSaveLoadManager : MonoBehaviour
     {
 

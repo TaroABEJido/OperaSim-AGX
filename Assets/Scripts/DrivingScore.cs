@@ -1,5 +1,7 @@
 using AGXUnity;
 using MathNet.Numerics;
+using MathNet.Numerics.LinearAlgebra;
+using MathNet.Numerics.LinearAlgebra.Double;
 using MathNet.Numerics.Providers.LinearAlgebra;
 using System;
 using System.Collections;
@@ -7,13 +9,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using MathNet.Numerics.LinearAlgebra;
-using MathNet.Numerics.LinearAlgebra.Double;
-
+using static System.Net.Mime.MediaTypeNames;
 using Debug = UnityEngine.Debug;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// クローラダンプの走行スコアリング処理
+    /// </summary>
     public class DrivingScore : MonoBehaviour
     {
         // 位置を保持
@@ -26,6 +29,10 @@ namespace PWRISimulator
         // 積載量を保持
         private double prevVolume;
         private double volScore;
+
+        // 接触した時間を保持
+        private float sepTime;
+        private static float sepNotRef = 1.0f;
 
 
         // メッシュサイズの都合によるスコア積算
@@ -128,23 +135,32 @@ namespace PWRISimulator
         private void OnSeparation(SeparationData data)
         {
             //UnityEngine.Debug.Log("OnSeparation: " + data);
-            Debug.Log("Component1: " + data.Component1.transform.root.gameObject.name);
-            Debug.Log("Component2: " + data.Component2.transform.root.gameObject.name);
+            //Debug.Log("Component1: " + data.Component1.transform.root.gameObject.name);
+            //Debug.Log("Component2: " + data.Component2.transform.root.gameObject.name);
 
             var com_1 = data.Component1.transform.root.gameObject.name;
             var com_2 = data.Component2.transform.root.gameObject.name;
 
-            // 重機名確認
-            if ((com_1.Contains("ic120") || com_1.Contains("zx200")) &&
-                (com_2.Contains("ic120") || com_2.Contains("zx200")))
-            {
-                Debug.Log("OnSeparation!!!");
+            Debug.Log("com_1: " + com_1 + ", com_2: " + com_2);
+            //Debug.Log("Time.time: " + Time.time + ", sepTime: " + sepTime + ", sepNotRef: " + sepNotRef);
 
-                // スコア計算
-                if (com_1 != com_2)
+            float diff = Time.time - sepTime;
+
+            if (diff >= sepNotRef)
+            {
+                Debug.Log("com_1: " + com_1 + ", com_2: " + com_2);
+
+                // 重機名確認
+                if ((com_1.Contains("ic120") || com_1.Contains("zx200")) &&
+                    (com_2.Contains("ic120") || com_2.Contains("zx200")) &&
+                    com_1 != com_2)
                 {
                     // 他の重機との接触
+
+                    // スコア計算
                     GlobalVariables.incrementScore((int)GlobalVariables.CollisionCoef);
+
+                    sepTime = Time.time;
                 }
             }
         }
@@ -156,30 +172,38 @@ namespace PWRISimulator
             volScore = 0.0;
             stayTime = 0.0f;
             mudScore = 0.0;
+            sepTime = 0.0f;
 
-            // 接触判定に使用するbody_linkを取得
+            // 親オブジェクト取得
             var parent = this.transform.parent.gameObject;
 
-            //Debug.Log(parent);
-            //Debug.Log(parent.transform.parent.gameObject);
 
-            var body_link = parent.transform.Find("body_link").gameObject;
+            // 接触判定に使用するbody_linkを取得
+            //var body_link = parent.transform.Find("body_link").gameObject;
 
-            //Debug.Log(body_link);
-            //Debug.Log(body_link.transform.parent.parent.gameObject);
+            //// 他の重機との接触判定
+            //var rb = body_link.GetComponent<RigidBody>();
+            //if (rb == null)
+            //{
+            //    Debug.LogWarning("MyContactListener: Expecting a RigidBody component.", this);
+            //    return;
+            //}
+            //Debug.Log("Modifying surface velocity of " + rb.name + ".");
+
+            //// コールバックを設定
+            //Simulation.Instance.ContactCallbacks.OnSeparation(OnSeparation, rb);
 
 
-            // 他の重機との接触判定
-            var rb = body_link.GetComponent<RigidBody>();
-            if (rb == null)
+            // RigidBodyを取得
+            var RGBL = parent.GetComponentsInChildren<RigidBody>();
+            foreach (RigidBody rgb in RGBL)
             {
-                Debug.LogWarning("MyContactListener: Expecting a RigidBody component.", this);
-                return;
-            }
-            Debug.Log("Modifying surface velocity of " + rb.name + ".");
+                Debug.Log(rgb);
 
-            // コールバックを設定
-            Simulation.Instance.ContactCallbacks.OnSeparation(OnSeparation, rb);
+                // コールバックを設定
+                Simulation.Instance.ContactCallbacks.OnSeparation(OnSeparation, rgb);
+            }
+
         }
 
         // Update is called once per frame

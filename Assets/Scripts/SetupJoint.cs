@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ロード時の油圧ショベルのジョイント復元処理
+    /// </summary>
     public class SetupJoint : MonoBehaviour
     {
         private ExcavatorJoints joints;
@@ -27,8 +30,6 @@ namespace PWRISimulator
         // Start is called before the first frame update
         void Start()
         {
-            UnityEngine.Debug.Log("SetupJoint!!!");
-
             var shovelObj = this.gameObject;
 
             // クラス読み込み

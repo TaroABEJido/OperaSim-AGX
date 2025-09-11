@@ -2,6 +2,9 @@ using UnityEngine;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// 設定ファイル関連処理
+    /// </summary>
 
     [System.Serializable]
     public class SettingData

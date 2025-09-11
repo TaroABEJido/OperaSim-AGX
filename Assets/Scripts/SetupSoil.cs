@@ -8,6 +8,9 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ロード時の土砂の復元処理
+    /// </summary>
     public class SetupSoil : MonoBehaviour
     {
         private DeformableTerrain terrain;
@@ -71,14 +74,11 @@ namespace PWRISimulator
                 GlobalVariables.score = json_ms.score;
 
 
-
-                var MessageDaialogUI = Resources.Load<GameObject>("Prefabs/MessageDialog");
-                var MessageDaialogUIobj = Instantiate(MessageDaialogUI);
-                var _uiMessageDaialogDocument = MessageDaialogUIobj.GetComponent<UIDocument>();
-
-                var root = _uiMessageDaialogDocument.rootVisualElement;
-                root.Q<UnityEngine.UIElements.Label>("Title").text = "Information";
-                root.Q<UnityEngine.UIElements.Label>("Message").text = "Load completed.";
+                if (GlobalVariables.ActionMode == 3)
+                {
+                    // タイマー再開
+                    CountdownTimer.isRunning = true;
+                }
             }
         }
     }

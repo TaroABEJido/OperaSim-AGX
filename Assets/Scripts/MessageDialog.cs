@@ -5,10 +5,11 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// メッセージダイアログ処理
+    /// </summary>
     public class MessageDialog : MonoBehaviour
     {
-
-
         private void OnEnable()
         {
             var root = this.GetComponent<UIDocument>().rootVisualElement;

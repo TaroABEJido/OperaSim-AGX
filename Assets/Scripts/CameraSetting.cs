@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// 配置用カメラ識別処理
+    /// </summary>
     public class CameraSetting : MonoBehaviour
     {
 

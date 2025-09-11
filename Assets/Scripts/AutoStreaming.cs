@@ -11,6 +11,9 @@ using Unity.RenderStreaming;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ゲーム画面のストリーミング処理
+    /// </summary>
     public class AutoStreaming : MonoBehaviour
     {
 
@@ -50,6 +53,8 @@ namespace PWRISimulator
             {
                 UnityEngine.Debug.LogError("CSH NULL");
             }
+
+
 
         }
 

@@ -4,6 +4,9 @@ using UnityEngine;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// 配置用カメラ制御処理
+    /// </summary>
     public class CameraControl : MonoBehaviour
     {
         [SerializeField, Range(0.1f, 20f)]
