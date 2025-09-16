@@ -5,9 +5,12 @@ using AGXUnity.Collide;
 using AGXUnity.Model;
 using AGXUnity.Utils;
 using Math = System.Math;
+using System.Diagnostics;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+
+using Debug = UnityEngine.Debug;
 
 namespace PWRISimulator
 {
@@ -112,7 +115,8 @@ namespace PWRISimulator
         #region Properties
 
         // 荷台とマージした粒子の総量。
-        public double soilMass { get; private set; } = 0.0;
+        //public double soilMass { get; private set; } = 0.0;
+        public double soilMass { get; set; } = 0.0;
 
         // 現在の放土速度。
         public double soilSpeed { get; private set; } = 0.0;
@@ -253,8 +257,22 @@ namespace PWRISimulator
             if (!addSoilMassRigidBody)
                 return true;
 
-            // ダンプ土砂の質量を扱うRigidBodyを作成（衝突不可能）
-            GameObject bodyObject = new GameObject(name + "_SoilMassBody", typeof(RigidBody));
+            String name;
+            GameObject obj = this.transform.root.gameObject;
+            if (obj != null)
+            {
+                Debug.Log("DumpSoil " + obj.name);
+                name = obj.name;
+            }
+            else
+            {
+                Debug.Log("DumpSoil Error Get Parent GameObject");
+                name = "DumpSoil";
+            }
+
+
+                // ダンプ土砂の質量を扱うRigidBodyを作成（衝突不可能）
+                GameObject bodyObject = new GameObject(name + "_SoilMassBody", typeof(RigidBody));
             bool asChild = GetComponentInParent<ArticulatedRoot>() == null; // ArticulatedRootの子にすると問題が発生するから
             if (asChild)
             {

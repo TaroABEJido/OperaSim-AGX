@@ -7,7 +7,9 @@ using AGXUnity.Model;
 using UnityEngine.InputSystem.LowLevel;
 using RosMessageTypes.Geometry;
 using agxDriveTrain;
+#if UNITY_EDITOR
 using UnityEditor.Rendering;
+#endif
 
 namespace PWRISimulator
 {

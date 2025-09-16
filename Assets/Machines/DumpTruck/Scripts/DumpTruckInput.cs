@@ -7,21 +7,28 @@ namespace PWRISimulator.ROS
         public DumpTruckDumpSubscriber RotDumpSubscriber;
         public TrackMessageSubscriber trackSubscriber;
         public DumpTruckSettingSubscriber settingSubscriber;
-        [SerializeField] ConstractionMovementControlType movementControlType;
-        [SerializeField] ControlType controlType = ControlType.Position;
+        //[SerializeField] ConstractionMovementControlType movementControlType;
+        //[SerializeField] ControlType controlType = ControlType.Position;
+        [SerializeField] public ConstractionMovementControlType movementControlType;
+        [SerializeField] public ControlType controlType = ControlType.Position;
 
         [Header("Dummy")]
         [SerializeField] bool enabledDummy;
         [SerializeField] double rotate_joint;
-        [SerializeField] double dump_joint;
-        [SerializeField] double right_track;
-        [SerializeField] double left_track;
+        //[SerializeField] double dump_joint;
+        //[SerializeField] double right_track;
+        //[SerializeField] double left_track;
         [SerializeField] bool emergencyStop;
+
+        [SerializeField] public double dump_joint;
+        [SerializeField] public double right_track;
+        [SerializeField] public double left_track;
 
         public TrackTwistCommandConvertor twistCommandConvertor;
         public TrackVolumeCommandConvertor volumeCommandConvertor;
 
-        private DumpTruckJoint joints;
+        //private DumpTruckJoint joints;
+        public DumpTruckJoint joints;
 
         void Start()
         {
@@ -117,8 +124,13 @@ namespace PWRISimulator.ROS
                         joints.dump_joint.controlValue = RotDumpSubscriber.DumpCmd.position[1];
                         break;
                     case ControlType.Speed:
-                        joints.dump_joint.controlType = ControlType.Speed;
-                        joints.dump_joint.controlValue = RotDumpSubscriber.DumpCmd.velocity[1];
+                        if (!GlobalVariables.SetupJointDumpFlag)
+                        {
+                            joints.dump_joint.controlType = ControlType.Speed;
+                            joints.dump_joint.controlValue = RotDumpSubscriber.DumpCmd.velocity[1];
+
+                            //UnityEngine.Debug.Log(joints.dump_joint.controlValue);
+                        }
                         break;
                     case ControlType.Force:
                         joints.dump_joint.controlType = ControlType.Force;
@@ -142,11 +154,14 @@ namespace PWRISimulator.ROS
                                 joints.leftSprocket.controlValue = trackSubscriber.TrackCmd.position[1];
                                 break;
                             case ControlType.Speed:
-                                joints.rightSprocket.controlType = ControlType.Speed;
-                                joints.rightSprocket.controlValue = trackSubscriber.TrackCmd.velocity[0];
+                                if (!GlobalVariables.SetupJointDumpFlag)
+                                {
+                                    joints.rightSprocket.controlType = ControlType.Speed;
+                                    joints.rightSprocket.controlValue = trackSubscriber.TrackCmd.velocity[0];
 
-                                joints.leftSprocket.controlType = ControlType.Speed;
-                                joints.leftSprocket.controlValue = trackSubscriber.TrackCmd.velocity[1];
+                                    joints.leftSprocket.controlType = ControlType.Speed;
+                                    joints.leftSprocket.controlValue = trackSubscriber.TrackCmd.velocity[1];
+                                }
                                 break;
                             case ControlType.Force:
                                 joints.rightSprocket.controlType = ControlType.Force;
