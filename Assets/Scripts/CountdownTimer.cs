@@ -7,9 +7,11 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ÉQÅ[ÉÄâÊñ Ç≈ÇÃécÇËéûä‘åvéZèàóù
+    /// </summary>
     public class CountdownTimer : MonoBehaviour
     {
-
         private VisualElement root;
         private ProgressBar countPB;
         private string CountdownStr;
@@ -19,6 +21,9 @@ namespace PWRISimulator
 
         public static float timeRemaining;
         public static bool isRunning = true;
+
+        public static bool timeupFlag = false;
+
 
         [SerializeField] private Color lowColor = Color.red;
         [SerializeField] private Color midColor = Color.yellow;
@@ -105,8 +110,12 @@ namespace PWRISimulator
 
                     GlobalVariables.changeActionMode(-1);
 
+                    timeupFlag = true;
                 }
-
+                else
+                {
+                    timeupFlag = false;
+                }
             }
 
         }

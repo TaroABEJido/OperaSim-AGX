@@ -6,6 +6,9 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// カメラ映像の確認用サブディスプレイ処理
+    /// </summary>
     public class Subdisplay : MonoBehaviour
     {
 

@@ -7,6 +7,9 @@ using Debug = UnityEngine.Debug;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// 油圧ショベルのスコアリング処理
+    /// </summary>
     public class ShovelScore : MonoBehaviour
     {
         // 位置を保持

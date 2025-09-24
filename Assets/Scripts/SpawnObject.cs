@@ -12,6 +12,10 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// d‹@“™‚Ì¶¬ˆ—
+    /// </summary>
+
     //[RequireComponent(typeof(Camera))]
     public class SpawnObject : MonoBehaviour
     {

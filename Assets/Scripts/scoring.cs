@@ -6,10 +6,11 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// スコアリング表示更新処理
+    /// </summary>
     public class Score : MonoBehaviour
     {
-
-
         public float timeOut = 500;
         private float timeElapsed;
 
@@ -25,7 +26,7 @@ namespace PWRISimulator
         // Start is called before the first frame update
         void Start()
         {
-        
+
         }
 
         // Update is called once per frame
@@ -36,8 +37,6 @@ namespace PWRISimulator
 
             if (timeElapsed >= timeOut)
             {
-
-
                 if (GlobalVariables.ActionMode == 3)
                 {
                     var Score = root.Q<UnityEngine.UIElements.Label>("Value");

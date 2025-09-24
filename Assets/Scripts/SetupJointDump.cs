@@ -7,6 +7,9 @@ using UnityEngine;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ロード時のダンプクローラのジョイント復元処理
+    /// </summary>
     public class SetupJointDump : MonoBehaviour
     {
         private DumpTruckJoint joints;

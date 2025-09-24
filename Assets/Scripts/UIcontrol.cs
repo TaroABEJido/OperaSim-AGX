@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.ComponentModel.Design;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection.Emit;
@@ -21,6 +22,9 @@ using Debug = UnityEngine.Debug;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// GUIパーツ制御処理
+    /// </summary>
     public class UIcontrol : MonoBehaviour
     {
         [SerializeField] GameObject MenuUI;
@@ -30,7 +34,6 @@ namespace PWRISimulator
         [SerializeField] GameObject CameraSelectorUI;
         private UIDocument _uiCameraSelectDocument;
         private GameObject CameraSelectorUIobj;
-
 
         [SerializeField] GameObject MessageDaialogUI;
         private GameObject MessageDaialogUIobj;
@@ -59,10 +62,21 @@ namespace PWRISimulator
         private GameObject SubdisplayUIobj;
 
 
-        // セーブ・ロード機能
+        // セーブ・ロード機能 シミュレーションUI
         [SerializeField] GameObject SaveLoadUI;
         private GameObject SaveLoadUIobj;
         private UIDocument _uiSaveLoadDocument;
+
+        // セーブ・ロード機能 設定画面UI
+        [SerializeField] GameObject SaveLoadSettingUI;
+        private GameObject SaveLoadSettingUIobj;
+        private UIDocument _uiSaveLoadSettingDocument;
+
+
+        [SerializeField] GameObject ConfirmDaialogUI;
+        private GameObject ConfirmDaialogUIobj;
+        private UIDocument _uiConfirmDaialogDocument;
+
 
         // 並進・回転・削除
         [SerializeField] GameObject ObjectTransRotUI;
@@ -74,75 +88,6 @@ namespace PWRISimulator
         private DeformableTerrain terrain;
 
         private MachineObjCamCont machineObj;
-
-
-        [System.Serializable]
-        public class SaveParticles
-        {
-            public Particles[] data;
-        }
-
-        [System.Serializable]
-        public class Particles
-        {
-            public agxVec3 position;
-            public agxVec3 velocity;
-            public double radius;
-            public double mass;
-        }
-
-        [System.Serializable]
-        public class agxVec3
-        {
-            public double x;
-            public double y;
-            public double z;
-        }
-
-        // ダンプトラックの積載
-        [System.Serializable]
-        public class SaveDumpSoil
-        {
-            public TransDumpSoil[] data;
-        }
-
-        [System.Serializable]
-        public class TransDumpSoil
-        {
-            public string id;
-            public double mass;
-        }
-
-        // 重機の姿勢(時間とスコアも追加)
-        [System.Serializable]
-        public class SaveMachines
-        {
-            public float time;
-            public int score;
-            public objProperties[] data;
-        }
-
-        [System.Serializable]
-        public class objJoint
-        {
-            public double swing_joint;
-            public double boom_joint;
-            public double arm_joint;
-            public double bucket_joint;
-            public double right_track;
-            public double left_track;
-            public double dump_joint;
-        }
-
-        [System.Serializable]
-        public class objProperties
-        {
-            public string name;
-            public string id;
-            public Vector3 p;
-            public Quaternion q;
-            public objJoint joint;
-        }
 
 
 
@@ -168,11 +113,25 @@ namespace PWRISimulator
             //root.Q<Button>("SimulationStart").clicked += () => OnSimulationStartClicked();
             //root.Q<Button>("send").clicked += () => Debug.Log(root.Q<TextField>("TitleText").value);
 
-            GlobalVariables.ActionMode = -1;
+            //GlobalVariables.ActionMode = -1;
+            GlobalVariables.changeActionMode(-1);
 
             SubdisplayUIobj = null;
 
             prev_SetMoveType = GlobalVariables.SetMoveType;
+
+
+            // セーブ・ロード・リセット機能
+            SaveLoadSettingUIobj = Instantiate(SaveLoadSettingUI);
+
+            _uiSaveLoadSettingDocument = SaveLoadSettingUIobj.GetComponent<UIDocument>();
+            _uiSaveLoadSettingDocument.gameObject.SetActive(true);
+
+            var save_root = _uiSaveLoadSettingDocument.rootVisualElement;
+
+            save_root.Q<Button>("Save").clicked += () => SaveClicked();
+            save_root.Q<Button>("Load").clicked += () => LoadClicked();
+            save_root.Q<Button>("Reset").clicked += () => ResetClicked();
         }
 
         // Update is called once per frame
@@ -207,6 +166,17 @@ namespace PWRISimulator
             }
 
             prev_SetMoveType = GlobalVariables.SetMoveType;
+
+            if (CountdownTimer.timeupFlag) {
+                // 時間切れの場合ボタンを削除
+                if (SaveLoadUIobj != null)
+                {
+                    Destroy(SaveLoadUIobj);
+                    SaveLoadUIobj = null;
+                }
+            }
+
+            EndGame();
         }
 
 
@@ -340,6 +310,11 @@ namespace PWRISimulator
 
         void OnSimulationStartClicked()
         {
+            if (SaveLoadSettingUIobj != null) {
+                Destroy(SaveLoadSettingUIobj);
+                SaveLoadSettingUIobj = null;
+            }
+
 
             if (SubdisplayUIobj != null)
             {
@@ -387,22 +362,6 @@ namespace PWRISimulator
             CamerasInvisible();
 
 
-            // add 20250702
-
-            // 配置したダンプトラックのオブジェクトを取得
-            if ((int)GlobalVariables.Dump_IDList.Count > 0)
-            {
-                for (int i = 0; i < GlobalVariables.Dump_IDList.Count; i++)
-                {
-                    var id = GlobalVariables.Dump_IDList[i];           
-                    GameObject dumpObj = GameObject.Find("ic120_" + id);
-                    if (dumpObj != null) {
-                        GlobalVariables.Dump_ObjList.Add(dumpObj);
-                    }
-                }
-            }
-
-
             // 並進・回転・削除ボタン非表示
             if (_uiObjectTransRotDocument != null)
             {
@@ -444,9 +403,8 @@ namespace PWRISimulator
                 }
             }
 
-            if (SelectedCameraCounter > GlobalVariables.MaxCameras)
+            if (SelectedCameraCounter > 3)
             {
-
                 MessageDaialogUIobj = Instantiate(MessageDaialogUI);
                 _uiMessageDaialogDocument = MessageDaialogUIobj.GetComponent<UIDocument>();
 
@@ -512,7 +470,7 @@ namespace PWRISimulator
 
             setupMenuUI();
 
-            GlobalVariables.ForceCameraChabge = true;
+            GlobalVariables.ForceCameraChange = true;
         }
 
 
@@ -598,431 +556,224 @@ namespace PWRISimulator
         }
 
 
+        IEnumerator SaveCoroutine(saveScript savescript)
+        {
+            Debug.Log("GlobalVariables.ConfirmWaitFlag: " + GlobalVariables.ConfirmWaitFlag);
+            Debug.Log("completedFlag: " + savescript.completedFlag);
+
+            yield return new WaitUntil(() => (savescript.completedFlag == true));
+
+            if (savescript.completedFlag)
+            {
+                Debug.Log("savescript");
+
+                MessageDaialogUIobj = Instantiate(MessageDaialogUI);
+                _uiMessageDaialogDocument = MessageDaialogUIobj.GetComponent<UIDocument>();
+
+                var root = _uiMessageDaialogDocument.rootVisualElement;
+                root.Q<UnityEngine.UIElements.Label>("Title").text = "Information";
+                root.Q<UnityEngine.UIElements.Label>("Message").text = "Save completed.";
+
+                savescript.completedFlag = false;
+
+                // タイマー再開
+                CountdownTimer.isRunning = true;
+            }
+        }
+
         void SaveClicked()
         {
-            Debug.Log("Save!");
+            Debug.Log("SaveClicked!");
 
-            // 時間とスコアを保持
-            var myTime = CountdownTimer.timeRemaining;
-            var myScore = GlobalVariables.score;
-
-
-            if (terrain == null)
-            {
-                terrain = FindObjectOfType<DeformableTerrain>();
-            }
-            var soilSim = terrain.Native.getSoilSimulationInterface();
-
-
-            // 掘削時のモデル生成数確認
-            //var num = soilSim.getNumSoilParticles();
-            //Debug.Log("getNumSoilParticles: " + num);
-
-            // agx::Physics::GranularBodyPtrArray を取得
-            var soilParticles = soilSim.getSoilParticles();
-
-
-            if ((int)soilParticles.size() > 0)
-            {
-                SaveParticles save = new SaveParticles();
-                save.data = new Particles[soilParticles.size()];
-
-                for (uint i = 0; i < soilParticles.size(); i++)
-                {
-                    //Debug.Log("Index: " + i);
-                    save.data[i] = new Particles();
-
-                    // agx::Physics::GranularBodyPtr から位置や径を取得
-                    var pos = soilParticles.at(i).getPosition();
-                    //Debug.Log("Position: " + pos[0] + ", " + pos[1] + ", " + pos[2]);
-                    save.data[i].position = new agxVec3();
-                    save.data[i].position.x = pos[0];
-                    save.data[i].position.y = pos[1];
-                    save.data[i].position.z = pos[2];
-
-                    var vel = soilParticles.at(i).getVelocity();
-                    //Debug.Log("Velocity: " + vel[0] + ", " + vel[1] + ", " + vel[2]);
-                    save.data[i].velocity = new agxVec3();
-                    save.data[i].velocity.x = vel[0];
-                    save.data[i].velocity.y = vel[1];
-                    save.data[i].velocity.z = vel[2];
-
-                    var rad = soilParticles.at(i).getRadius();
-                    //Debug.Log("Radius: " + rad);
-                    save.data[i].radius = rad;
-
-                    var mas = soilParticles.at(i).getMass();
-                    //Debug.Log("Mass: " + mas);
-                    save.data[i].mass = mas;
-                }
-
-
-                if (save.data != null)
-                {
-                    string json = JsonUtility.ToJson(save, true);
-                    StreamWriter sw = new StreamWriter(Path.Combine(GlobalVariables.BACKUP_FOLDER, "SoilParticles"));
-                    sw.Write(json);
-                    sw.Flush();
-                    sw.Close();
-                }
-            }
+            saveScript savescript = null;
 
             // 地形を保存
-            var savescript = SaveLoadUIobj.GetComponent<saveScript>();
-            savescript.OnClick();
-
-
-            // 重機の姿勢保持
-            SaveMachines sm = new SaveMachines();
-            int num = (int)GlobalVariables.Dump_ObjList.Count + 1;
-            sm.data = new objProperties[num];
-            sm.data[0] = new objProperties();
-
-
-            // 時間とスコア
-            sm.time = myTime;
-            sm.score = myScore;
-
-                        
-            // ショベルカー
-            GameObject shovelObj = GameObject.Find(SpawnObject.zx200_objName);
-
-            var shovelInput = shovelObj.GetComponent<ExcavatorInput>();
-            var shovelJoint = shovelInput.joints;
-
-            sm.data[0].name = shovelObj.name;
-            sm.data[0].id = shovelObj.name;
-            sm.data[0].p = shovelObj.transform.position;
-            sm.data[0].q = shovelObj.transform.rotation;
-
-            sm.data[0].joint = new objJoint();
-
-            sm.data[0].joint.swing_joint = shovelJoint.swing.JointCurrentPosition;
-            sm.data[0].joint.boom_joint = shovelJoint.boomTilt.JointCurrentPosition;
-            sm.data[0].joint.arm_joint = shovelJoint.armTilt.JointCurrentPosition;
-            sm.data[0].joint.bucket_joint = shovelJoint.bucketTilt.JointCurrentPosition;
-            sm.data[0].joint.right_track = shovelJoint.rightSprocket.JointCurrentPosition;
-            sm.data[0].joint.left_track = shovelJoint.leftSprocket.JointCurrentPosition;
-
-
-            if ((int)GlobalVariables.Dump_ObjList.Count > 0)
+            if (GlobalVariables.ActionMode == 3)
             {
-                SaveDumpSoil sd = new SaveDumpSoil();
-                sd.data = new TransDumpSoil[GlobalVariables.Dump_ObjList.Count];
+                // タイマー停止
+                CountdownTimer.isRunning = false;
 
-                for (int i = 0; i < GlobalVariables.Dump_ObjList.Count; i++)
-                {
-                    sd.data[i] = new TransDumpSoil();
-
-                    var id = GlobalVariables.Dump_IDList[i];
-                    GameObject dumpObj = GlobalVariables.Dump_ObjList[i];
-
-                    var ds = dumpObj.GetComponentInChildren<DumpSoil>();
-                    Debug.Log("id: " + id + ", mass: " + ds.soilMass);
-
-                    sd.data[i].id = id;
-                    sd.data[i].mass = ds.soilMass;
-                
-                    // -----------------
-                    var dumpInput = dumpObj.GetComponent<DumpTruckInput>();
-                    var dumpJoint = dumpInput.joints;
-
-                    sm.data[i + 1] = new objProperties();
-                    sm.data[i + 1].joint = new objJoint();
-
-                    sm.data[i + 1].name = dumpObj.name;
-                    sm.data[i + 1].id = id;
-                    sm.data[i + 1].p = dumpObj.transform.Find("base_link/body_link").position;
-                    sm.data[i + 1].q = dumpObj.transform.Find("base_link/body_link").rotation;
-
-                    sm.data[i + 1].joint.right_track = dumpJoint.rightSprocket.CurrentPosition;
-                    sm.data[i + 1].joint.left_track = dumpJoint.leftSprocket.CurrentPosition;
-                    sm.data[i + 1].joint.dump_joint = dumpJoint.dump_joint.CurrentPosition;
-                }
-
-                // ダンプトラックの積載保存
-                if (sd.data != null)
-                {
-                    string json_sd = JsonUtility.ToJson(sd, true);
-                    using (StreamWriter sw = new StreamWriter(Path.Combine(GlobalVariables.BACKUP_FOLDER, "DumpSoil")))
-                    {
-                        sw.Write(json_sd);
-                    }
-                }
+                savescript = SaveLoadUIobj.GetComponent<saveScript>();
+                savescript.OnClick();
+            }
+            else
+            {
+                savescript = SaveLoadSettingUIobj.GetComponent<saveScript>();
+                savescript.OnClick();
             }
 
+            // コルーチンの実行  
+            StartCoroutine(SaveCoroutine(savescript));
+        }
 
-            // 重機の姿勢を保存
-            if (sm.data != null)
+
+        IEnumerator LoadCoroutine(loadScript loadscript)
+        {
+            Debug.Log("GlobalVariables.ConfirmWaitFlag: " + GlobalVariables.ConfirmWaitFlag);
+            Debug.Log("completedFlag: " + loadscript.completedFlag);
+
+            yield return new WaitUntil(() => (loadscript.completedFlag == true));
+
+            if (loadscript.completedFlag)
             {
-                string json_sm = JsonUtility.ToJson(sm, true);
-                using (StreamWriter sw = new StreamWriter(Path.Combine(GlobalVariables.BACKUP_FOLDER, "MachinesJoints")))
-                {
-                    sw.Write(json_sm);
-                }
+                Debug.Log("loadscript");
+
+                //MessageDaialogUIobj = Instantiate(MessageDaialogUI);
+                //_uiMessageDaialogDocument = MessageDaialogUIobj.GetComponent<UIDocument>();
+
+                //var root = _uiMessageDaialogDocument.rootVisualElement;
+                //root.Q<UnityEngine.UIElements.Label>("Title").text = "Information";
+                //root.Q<UnityEngine.UIElements.Label>("Message").text = "Load completed.";
+
+                loadscript.completedFlag = false;
+            }
+        }
+
+        void LoadClicked()
+        {
+            Debug.Log("LoadClicked!");
+
+            loadScript loadscript = null;
+
+            // 地形を読込
+            if (GlobalVariables.ActionMode == 3)
+            {
+                // タイマー停止
+                CountdownTimer.isRunning = false;
+
+                loadscript = SaveLoadUIobj.GetComponent<loadScript>();
+                loadscript.OnClick();
+            }
+            else
+            {
+                loadscript = SaveLoadSettingUIobj.GetComponent<loadScript>();
+                loadscript.OnClick();
             }
 
-            // 泥濘エリアのカウント行列保存
-            using (StreamWriter sw = new StreamWriter(Path.Combine(GlobalVariables.BACKUP_FOLDER, "MudAreaMatrix")))
-            {
-                //sw.Write(GlobalVariables.countMat);
+            // コルーチンの実行  
+            StartCoroutine(LoadCoroutine(loadscript));
+        }
 
-                int rows = GlobalVariables.countMat.RowCount;
-                int cols = GlobalVariables.countMat.ColumnCount;
 
-                Debug.Log("rows: " + rows + ", cols: " + cols);
-
-                for (int i = 0; i < rows; i++)
-                {
-                    string line = "";
-                    for (int j = 0; j < cols; j++)
-                    {
-                        line = line + GlobalVariables.countMat[i, j].ToString() + ",";
-                    }
-                    sw.WriteLine(line);
-                }
-            }
-
+        IEnumerator ResetCompleted()
+        {
+            yield return new WaitUntil(() => (GlobalVariables.SelectMode == -1));
 
             MessageDaialogUIobj = Instantiate(MessageDaialogUI);
             _uiMessageDaialogDocument = MessageDaialogUIobj.GetComponent<UIDocument>();
 
             var root = _uiMessageDaialogDocument.rootVisualElement;
             root.Q<UnityEngine.UIElements.Label>("Title").text = "Information";
-            root.Q<UnityEngine.UIElements.Label>("Message").text = "Save completed.";
+            root.Q<UnityEngine.UIElements.Label>("Message").text = "Reset completed.";
         }
 
-        void LoadClicked()
+        IEnumerator ResetCoroutine()
         {
-            Debug.Log("***** Load *****");
+            Debug.Log("GlobalVariables.ConfirmWaitFlag: " + GlobalVariables.ConfirmWaitFlag);
+            yield return new WaitUntil(() => (GlobalVariables.ConfirmWaitFlag != 1));
 
-            // リセット
-            if (terrain == null)
+
+            if (GlobalVariables.ConfirmWaitFlag == 2)
             {
-                terrain = FindObjectOfType<DeformableTerrain>();
-            }
-            terrain.ResetHeights();
+                Debug.Log("Start!");
 
-            // 泥濘エリアのカウントリセット
-            GlobalVariables.countMat.Clear();
+                // 別のスクリプトで地形と重機の読み込みを実行するためフラグ切り替え
+                GlobalVariables.SelectMode = 2;
 
 
-            // 掘削で生成されたモデルを削除
-            var soilSim = terrain.Native?.getSoilSimulationInterface();
-            var soilParticles = soilSim.getSoilParticles();
+                List<Camera> cameras = new List<Camera>();
+                cameras.AddRange(FindObjectsOfType<Camera>(true));
 
-            for (uint i = 0; i < soilParticles.size(); i++)
-            {
-                // 残留モデルの削除
-                soilSim.removeSoilParticle(soilParticles.at(i));
-            }
-
-            // 地形を読込
-            var loadscript = SaveLoadUIobj.GetComponent<loadScript>();
-            loadscript.OnClick();
-
-
-            // ファイル読み込み（姿勢）
-            StreamReader rd_ms = new StreamReader(Path.Combine(GlobalVariables.BACKUP_FOLDER, "MachinesJoints"));
-            string str_ms = rd_ms.ReadToEnd();
-            rd_ms.Close();
-
-            SaveMachines json_ms = JsonUtility.FromJson<SaveMachines>(str_ms);
-
-            GlobalVariables.saveMachines = json_ms;
-
-
-            // ファイル読み込み（積載）
-            StreamReader rd_ds = new StreamReader(Path.Combine(GlobalVariables.BACKUP_FOLDER, "DumpSoil"));
-            string str_ds = rd_ds.ReadToEnd();
-            rd_ds.Close();
-
-            SaveDumpSoil json_ds = JsonUtility.FromJson<SaveDumpSoil>(str_ds);
-
-            GlobalVariables.saveDumpSoil = json_ds;
-
-
-            // ファイル読み込み（掘削で生成されたモデル）
-            StreamReader rd = new StreamReader(Path.Combine(GlobalVariables.BACKUP_FOLDER, "SoilParticles"));
-            string str_p = rd.ReadToEnd();
-            rd.Close();
-
-            SaveParticles json = JsonUtility.FromJson<SaveParticles>(str_p);
-
-            GlobalVariables.saveParticles = json;
-
-
-
-            // ショベルカー削除
-            GameObject _shovelObj = GameObject.Find(SpawnObject.zx200_objName);
-            if (_shovelObj != null)
-            {
-                UnityEngine.Object.Destroy(_shovelObj);
-            }
-
-            // 位置
-            Vector3 _pos = new Vector3((float)json_ms.data[0].p.x, (float)json_ms.data[0].p.y, (float)json_ms.data[0].p.z);
-            Debug.Log(_pos);
-
-            // 回転
-            Quaternion _qut = new Quaternion((float)json_ms.data[0].q.x, (float)json_ms.data[0].q.y, (float)json_ms.data[0].q.z, (float)json_ms.data[0].q.w);
-            Debug.Log(_qut);
-
-            // ショベルカー再配置
-            GameObject zx200_prefab = Resources.Load<GameObject>(SpawnObject.zx200_path);
-            GameObject shovelObj = (GameObject)UnityEngine.Object.Instantiate(zx200_prefab, _pos, _qut);
-            shovelObj.name = SpawnObject.zx200_objName;
-
-
-            // ダンプトラック削除
-            for (int i = 0; i < GlobalVariables.Dump_ObjList.Count; i++)
-            {
-                GameObject dumpObj = GlobalVariables.Dump_ObjList[i];
-
-                if (dumpObj != null)
+                for (int i = 0; i < cameras.Count; i++)
                 {
-                    // 削除
-                    Destroy(dumpObj);
-                    GameObject objMassBody = GameObject.Find(dumpObj.name + "_SoilMassBody");
-                    if (objMassBody != null) Destroy(objMassBody);
-                    GameObject objMassJoint = GameObject.Find(dumpObj.name + "_SoilMassJoint");
-                    if (objMassJoint != null) Destroy(objMassJoint);
-                }
-            }
+                    //Debug.Log(cameras[i].gameObject.transform.root.gameObject.name.Contains("Camera_"));
 
-            // 保持しているダンプトラックオブジェクトリストのクリア
-            GlobalVariables.Dump_IDList.Clear();
-            GlobalVariables.Dump_ObjList.Clear();
-
-            GlobalVariables.ic120Counter = 0;
-
-
-            // ダンプトラックに関する情報読み込み
-            for (int i = 1; i < json_ms.data.Length; i++)
-            {
-                // 再配置
-                GameObject ic120_prefab = Resources.Load<GameObject>("Prefabs/ic120_prefVar");
-                GameObject ic120obj = (GameObject)UnityEngine.Object.Instantiate(ic120_prefab, json_ms.data[i].p, json_ms.data[i].q);
-                ic120obj.name = json_ms.data[i].name;
-
-                // ダンプトラックオブジェクトリストの更新
-                GlobalVariables.Dump_IDList.Add(json_ms.data[i].id);
-                GlobalVariables.Dump_ObjList.Add(ic120obj);
-
-                GlobalVariables.ic120Counter += 1;
-            }
-
-
-            // 泥濘エリアのカウント行列読込
-            using (StreamReader sr = new StreamReader(Path.Combine(GlobalVariables.BACKUP_FOLDER, "MudAreaMatrix")))
-            {
-                string content = sr.ReadToEnd();
-                string[] strAry = content.Split(',');
-
-                int rows = GlobalVariables.countMat.RowCount;
-                int cols = GlobalVariables.countMat.ColumnCount;
-
-                Debug.Log("rows: " + rows + ", cols: " + cols);
-
-                for (int i = 0; i < rows; i++)
-                {
-                    for (int j = 0; j < cols; j++)
+                    // 追加したカメラのみ削除
+                    if (cameras[i].gameObject.transform.root.gameObject.name.Contains("Camera_"))
                     {
-                        GlobalVariables.countMat[i, j] = double.Parse(strAry[(rows * i - 1) + (j + 1)]);
+                        UnityEngine.Object.Destroy(cameras[i].gameObject.transform.root.gameObject);
                     }
                 }
+
+                // カメラを削除
+                GlobalVariables.CameraCounter = 0;
+
+
+                if (GlobalVariables.ActionMode == 3)
+                {
+                    // タイマー停止
+                    CountdownTimer.isRunning = false;
+
+                    // スコアリセット
+                    GlobalVariables.score = 0;
+
+
+                    // 設定画面に戻る
+                    StatusBoardUIobj = Instantiate(StatusBoardUI);
+                    sBoard = StatusBoardUIobj.GetComponent<StatusBoard>();
+                    sBoard.SetStatusMessage("Start!!");
+                    sBoard.SetMessageColor(Color.blue);
+
+                    munuUIobj = Instantiate(MenuUI);
+                    _uiDocument = munuUIobj.GetComponent<UIDocument>();
+                    var root = _uiDocument.rootVisualElement;
+
+                    setupMenuUI();
+
+                    ObjectTransRotUIobj = null;
+
+
+                    // セーブ・ロード・リセット機能
+                    SaveLoadSettingUIobj = Instantiate(SaveLoadSettingUI);
+
+                    _uiSaveLoadSettingDocument = SaveLoadSettingUIobj.GetComponent<UIDocument>();
+                    _uiSaveLoadSettingDocument.gameObject.SetActive(true);
+
+                    var save_root = _uiSaveLoadSettingDocument.rootVisualElement;
+
+                    save_root.Q<Button>("Save").clicked += () => SaveClicked();
+                    save_root.Q<Button>("Load").clicked += () => LoadClicked();
+                    save_root.Q<Button>("Reset").clicked += () => ResetClicked();
+
+
+                    // タイマーやスコアを非表示にする
+                    CountdownTimerUIobj.SetActive(false);
+                    ScoreUIobj.SetActive(false);
+                    _uiSaveLoadDocument.gameObject.SetActive(false);
+
+
+                    // モードをセット
+                    GlobalVariables.changeActionMode(-1);
+                }
+
+                GlobalVariables.ConfirmWaitFlag = 0;
+
+
+                // コルーチンの実行  
+                StartCoroutine(ResetCompleted());
             }
-
-
-            //// デバック
-            //using (StreamWriter sw = new StreamWriter(Path.Combine(GlobalVariables.BACKUP_FOLDER, "MudAreaMatrix_set")))
-            //{
-            //    //sw.Write(GlobalVariables.countMat);
-
-            //    int rows = GlobalVariables.countMat.RowCount;
-            //    int cols = GlobalVariables.countMat.ColumnCount;
-
-            //    Debug.Log("rows: " + rows + ", cols: " + cols);
-
-            //    for (int i = 0; i < rows; i++)
-            //    {
-            //        string line = "";
-            //        for (int j = 0; j < cols; j++)
-            //        {
-            //            line = line + GlobalVariables.countMat[i, j].ToString() + ",";
-            //        }
-            //        sw.WriteLine(line);
-            //    }
-            //}
-
-
-            // カウントリセット
-            GlobalVariables.SetupJointDumpCount = 0;
-
-            // フラグを切り替えて動作開始
-            GlobalVariables.SetupJointFlag = true;
-            GlobalVariables.SetupJointDumpFlag = true;
-
         }
 
         void ResetClicked()
         {
-            Debug.Log("Reset!");
+            Debug.Log("ResetClicked!");
 
-            // 別のスクリプトで地形と重機の読み込みを実行するためにフラグ切り替え
-            GlobalVariables.SelectMode = 2;
-
-
-            List<Camera> cameras = new List<Camera>();
-            cameras.AddRange(FindObjectsOfType<Camera>(true));
-
-            for (int i = 0; i < cameras.Count; i++)
+            if (GlobalVariables.ConfirmWaitFlag == 0)
             {
-                Debug.Log(cameras[i].gameObject.transform.root.gameObject.name.Contains("Camera_"));
+                GlobalVariables.ConfirmWaitFlag = 1;
 
-                // 追加したカメラのみ削除
-                if (cameras[i].gameObject.transform.root.gameObject.name.Contains("Camera_"))
-                {
-                    UnityEngine.Object.Destroy(cameras[i].gameObject.transform.root.gameObject);
-                }
+                // ダイアログ表示
+                ConfirmDaialogUIobj = Instantiate(ConfirmDaialogUI);
+                _uiConfirmDaialogDocument = ConfirmDaialogUIobj.GetComponent<UIDocument>();
+
+                var _root = _uiConfirmDaialogDocument.rootVisualElement;
+                _root.Q<UnityEngine.UIElements.Label>("Title").text = "Confirm";
+                _root.Q<UnityEngine.UIElements.Label>("Message").text = "Reset. Are you sure?";
+
+
+                // コルーチンの実行  
+                StartCoroutine(ResetCoroutine());
             }
-
-            // カメラを削除
-            GlobalVariables.CameraCounter = 0;
-
-
-
-            // タイマー停止
-            CountdownTimer.isRunning = false;
-
-            // スコアリセット
-            GlobalVariables.score = 0;
-
-
-            // 設定画面に戻る
-            StatusBoardUIobj = Instantiate(StatusBoardUI);
-            sBoard = StatusBoardUIobj.GetComponent<StatusBoard>();
-            sBoard.SetStatusMessage("Start!!");
-            sBoard.SetMessageColor(Color.blue);
-
-            munuUIobj = Instantiate(MenuUI);
-            _uiDocument = munuUIobj.GetComponent<UIDocument>();
-            var root = _uiDocument.rootVisualElement;
-
-            setupMenuUI();
-
-            ObjectTransRotUIobj = null;
-
-
-            // タイマーやスコアを非表示にする
-            CountdownTimerUIobj.SetActive(false);
-            ScoreUIobj.SetActive(false);
-            _uiSaveLoadDocument.gameObject.SetActive(false);
-
-            // モードをセット
-            GlobalVariables.ActionMode = -1;
-
-            SubdisplayUIobj = null;
         }
 
 
@@ -1119,5 +870,54 @@ namespace PWRISimulator
                 MainCameraSettingsClicked();
             }
         }
+
+
+
+        IEnumerator EndCoroutine()
+        {
+            Debug.Log("GlobalVariables.ConfirmWaitFlag: " + GlobalVariables.ConfirmWaitFlag);
+            yield return new WaitUntil(() => (GlobalVariables.ConfirmWaitFlag != 1));
+
+            if (GlobalVariables.ConfirmWaitFlag == 2)
+            {
+#if UNITY_EDITOR
+                UnityEditor.EditorApplication.isPlaying = false;
+#else
+                //Application.Quit();
+                UnityEngine.Application.Quit();
+#endif
+
+                GlobalVariables.ConfirmWaitFlag = 0;
+            }
+        }
+
+
+        private void EndGame()
+        {
+            //Escが押されたらプログラム終了
+            if (Input.GetKey(KeyCode.Escape))
+            {
+                Debug.Log("EscapeClicked!");
+
+                if (GlobalVariables.ConfirmWaitFlag == 0)
+                {
+                    GlobalVariables.ConfirmWaitFlag = 1;
+
+                    // ダイアログ表示
+                    ConfirmDaialogUIobj = Instantiate(ConfirmDaialogUI);
+                    _uiConfirmDaialogDocument = ConfirmDaialogUIobj.GetComponent<UIDocument>();
+
+                    var _root = _uiConfirmDaialogDocument.rootVisualElement;
+                    _root.Q<UnityEngine.UIElements.Label>("Title").text = "Confirm";
+                    _root.Q<UnityEngine.UIElements.Label>("Message").text = "Exiting. Are you sure?";
+
+
+                    // コルーチンの実行  
+                    StartCoroutine(EndCoroutine());
+                }
+            }
+
+        }
+
     }
 }

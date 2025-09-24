@@ -6,9 +6,11 @@ using UnityEngine;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// d‹@‚É“‹Ú‚³‚ê‚Ä‚¢‚éƒJƒƒ‰‚Ì§Œäˆ—
+    /// </summary>
     public class MachineObjCamCont 
     {
-
         public String MachineCamContPath = "Prefabs/MachineCamCont_Variant";
         public GameObject MachineCamContUI;
         private GameObject MachineCamContUIobj;

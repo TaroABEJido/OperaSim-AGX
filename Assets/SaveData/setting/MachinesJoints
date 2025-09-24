@@ -1,0 +1,258 @@
+{
+    "time": 0.0,
+    "score": 0,
+    "data": [
+        {
+            "name": "zx200_prefVar",
+            "id": "zx200_prefVar",
+            "p": {
+                "x": 20.0,
+                "y": 11.5,
+                "z": 15.5
+            },
+            "q": {
+                "x": 0.0,
+                "y": 1.0,
+                "z": 0.0,
+                "w": 0.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": -0.1745329238474359,
+                "arm_joint": 0.5934118872867238,
+                "bucket_joint": 3.30030935913328e-8,
+                "right_track": 4.930380657631324e-32,
+                "left_track": 4.930380657631324e-32,
+                "dump_joint": 0.0
+            },
+            "active": true
+        },
+        {
+            "name": "ic120_0",
+            "id": "0",
+            "p": {
+                "x": 12.392772674560547,
+                "y": 10.233184814453125,
+                "z": 58.940269470214847
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": -4.9303806576313229e-32,
+                "left_track": -4.9303806576313229e-32,
+                "dump_joint": 0.0
+            },
+            "active": true
+        },
+        {
+            "name": "ic120_1",
+            "id": "1",
+            "p": {
+                "x": 30.56744956970215,
+                "y": 10.273056983947754,
+                "z": 49.475669860839847
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": -4.9303806576313229e-32,
+                "left_track": -4.9303806576313229e-32,
+                "dump_joint": 0.0
+            },
+            "active": true
+        }
+    ],
+    "camera": [
+        {
+            "name": "Camera_2",
+            "id": "2",
+            "p": {
+                "x": 54.71144485473633,
+                "y": 10.464295387268067,
+                "z": 61.234378814697269
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": 0.0,
+                "left_track": 0.0,
+                "dump_joint": 0.0
+            },
+            "active": true
+        },
+        {
+            "name": "Camera_1",
+            "id": "1",
+            "p": {
+                "x": 67.17815399169922,
+                "y": 10.814916610717774,
+                "z": 71.5126953125
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": 0.0,
+                "left_track": 0.0,
+                "dump_joint": 0.0
+            },
+            "active": true
+        },
+        {
+            "name": "Camera_0",
+            "id": "0",
+            "p": {
+                "x": 76.94136810302735,
+                "y": 10.502616882324219,
+                "z": 69.16573333740235
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": 0.0,
+                "left_track": 0.0,
+                "dump_joint": 0.0
+            },
+            "active": true
+        },
+        {
+            "name": "ic120_1",
+            "id": "",
+            "p": {
+                "x": 29.56744956970215,
+                "y": 12.673057556152344,
+                "z": 51.77566909790039
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": 0.0,
+                "left_track": 0.0,
+                "dump_joint": 0.0
+            },
+            "active": false
+        },
+        {
+            "name": "ic120_0",
+            "id": "",
+            "p": {
+                "x": 11.392772674560547,
+                "y": 12.633184432983399,
+                "z": 61.24026870727539
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0,
+                "w": 1.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": 0.0,
+                "left_track": 0.0,
+                "dump_joint": 0.0
+            },
+            "active": false
+        },
+        {
+            "name": "MainCameraStr",
+            "id": "",
+            "p": {
+                "x": -30.0,
+                "y": 30.0,
+                "z": -30.0
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.34202009439468386,
+                "z": 0.0,
+                "w": 0.9396926760673523
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": 0.0,
+                "left_track": 0.0,
+                "dump_joint": 0.0
+            },
+            "active": true
+        },
+        {
+            "name": "zx200_prefVar",
+            "id": "",
+            "p": {
+                "x": 20.0,
+                "y": 15.920000076293946,
+                "z": 16.530000686645509
+            },
+            "q": {
+                "x": 0.0,
+                "y": 0.9861541986465454,
+                "z": -0.1658313125371933,
+                "w": 0.0
+            },
+            "joint": {
+                "swing_joint": 0.0,
+                "boom_joint": 0.0,
+                "arm_joint": 0.0,
+                "bucket_joint": 0.0,
+                "right_track": 0.0,
+                "left_track": 0.0,
+                "dump_joint": 0.0
+            },
+            "active": true
+        }
+    ]
+}

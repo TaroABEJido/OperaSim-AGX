@@ -7,6 +7,9 @@ using Debug = UnityEngine.Debug;
  
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ゲーム画面に表示するカメラ等の切り替え処理
+    /// </summary>
     public class CameraChanger : MonoBehaviour
     {
         public List<Camera> cameras = new List<Camera>();
@@ -15,6 +18,16 @@ namespace PWRISimulator
         private int clsize = 0;
 
         private string MainCameraName = "MainCamera";
+
+
+        //public static List<Camera> cameras = new List<Camera>();
+        //private static int CameraIndex = 0;
+        //private static int CameraDepth_Default = 99;
+        //public static int clsize = 0;
+
+        //private static string MainCameraName = "MainCamera";
+
+        public static bool resetFlag = false;
 
 
         public static List<Camera> FindGameCameras(bool inactiveFlg = false)
@@ -51,6 +64,12 @@ namespace PWRISimulator
         }
 
 
+        public static void Reset()
+        {
+            resetFlag = true;
+        }
+
+
         // Start is called before the first frame update
         void Start()
         {
@@ -77,7 +96,74 @@ namespace PWRISimulator
         // Update is called once per frame
         void Update()
         {
+            if (resetFlag) {
 
+                //GameObjectを取得
+                var gameObjectList = FindObjectsOfType<Camera>(true);
+                //GameObject mainCamera = gameObjectList.FindGameObjectWithTag(MainCameraName);
+
+                GameObject mainCamera = null;
+                foreach (Camera component in gameObjectList)
+                {
+                    // コンポーネントを持つGameObjectのタグが指定したタグと一致するか確認する
+                    if (component.gameObject.CompareTag(MainCameraName))
+                    {
+                        mainCamera = component.gameObject;
+                        mainCamera.SetActive(true);
+                        mainCamera.transform.root.gameObject.SetActive(true);
+                        //cameras.Add(component);
+                    }
+                }
+
+                cameras.Clear();
+                cameras.AddRange(FindGameCameras(true));
+                clsize = cameras.Count;
+
+                UnityEngine.Debug.Log(string.Join(",", cameras));
+                UnityEngine.Debug.Log("clsize: " + clsize);
+
+
+                for (int i = 0; i < clsize; i++)
+                {
+                    if (mainCamera)
+                    {
+                        UnityEngine.Debug.Log(cameras[i].gameObject.name);
+                        UnityEngine.Debug.Log(mainCamera.name);
+
+                        if (cameras[i].gameObject.name == mainCamera.name)
+                        {
+                            cameras[i].gameObject.SetActive(true);
+                            CameraIndex = i;
+                        }
+                        else
+                        {
+                            cameras[i].gameObject.SetActive(false);
+                        }
+
+                    }
+                    else
+                    {
+                        if (i == 0)
+                        {
+                            cameras[i].gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            cameras[i].gameObject.SetActive(false);
+                        }
+                    }
+                }
+
+                //UnityEngine.Debug.Log("CameraIndex: " + CameraIndex);
+
+                GlobalVariables.ForceCameraChange = true;
+
+                resetFlag = false;
+            }
+
+
+
+            //UnityEngine.Debug.Log("CameraIndex: " + CameraIndex);
 
             if (Input.GetKeyUp(KeyCode.Q))
             {
@@ -100,12 +186,12 @@ namespace PWRISimulator
             clsize = cameras.Count;
 
 
-            if (Input.GetKeyUp(KeyCode.C) || GlobalVariables.ForceCameraChabge)
+            if (Input.GetKeyUp(KeyCode.C) || GlobalVariables.ForceCameraChange)
             {
 
                 clsize = cameras.Count;
                 
-                if (GlobalVariables.ForceCameraChabge)
+                if (GlobalVariables.ForceCameraChange)
                 {
                     CameraIndex = 0;
                     for (int i = 0; i < clsize; i++)
@@ -114,7 +200,7 @@ namespace PWRISimulator
                         cameras[i].rect = new Rect(0,0,1,1);
                     }
 
-                    GlobalVariables.ForceCameraChabge = false;
+                    GlobalVariables.ForceCameraChange = false;
                 }
 
 

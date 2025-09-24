@@ -6,9 +6,11 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// d‹@‚É“‹Ú‚³‚ê‚Ä‚¢‚éƒJƒƒ‰‚Ì§Œäˆ—
+    /// </summary>
     public class MachineCamControl : MonoBehaviour
     {
-
         private GameObject machineObj;
 
         private Slider HorizontalSlider;

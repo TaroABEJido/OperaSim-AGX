@@ -9,6 +9,9 @@ using Debug = UnityEngine.Debug;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// zx200 オブジェクト生成処理
+    /// </summary>
     public class zx200obj
     {
             public bool Spawn_zx200(Vector3 pos, Quaternion quat, int spawnID, String zx200_path)

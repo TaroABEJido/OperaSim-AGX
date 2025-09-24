@@ -6,6 +6,10 @@ using UnityEngine.UIElements;
 
 namespace PWRISimulator
 {
+    /// <summary>
+    /// ó‘Ô•\¦ˆ—
+    /// ƒQ[ƒ€‰æ–Êã•”‚É•\¦
+    /// </summary>
     public class StatusBoard : MonoBehaviour
     {
 
