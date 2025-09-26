@@ -42,6 +42,12 @@ namespace PWRISimulator
         [ConditionalHide("controlEnabled", true)]
         public double controlMaxForce = double.PositiveInfinity;
 
+        [ConditionalHide("controlEnabled", true)]
+        public double compliance = 1e-08;
+
+        [ConditionalHide("controlEnabled", true)]
+        public double damping = 0.04;
+
         public double CurrentPosition
         {
             get { return nativeConstraint != null ? nativeConstraint.getAngle() : 0.0; }
@@ -76,6 +82,7 @@ namespace PWRISimulator
                     UpdateControlType();
                     UpdateMaxForce();
                     UpdateControlValue();
+                    UpdatePDParam();
                 }
             }
         }
@@ -96,11 +103,16 @@ namespace PWRISimulator
 
             if (controlValue != controlValuePrev)
                 UpdateControlValue();
+
+            if (compliance != compliancePrev || damping != dampingPrev)
+                UpdatePDParam();
         }
 
         private ControlType? controlTypePrev = null;
         private double? controlValuePrev = null;// controlValueが変わったか検知するための値。
         private double? controlMaxForcePrev = null;
+        private double? compliancePrev = null;
+        private double? dampingPrev = null;
 
         private agx.Constraint1DOF nativeConstraint;
         private agx.LockController lockController;
@@ -137,6 +149,19 @@ namespace PWRISimulator
             controlMaxForcePrev = controlMaxForce;
         }
 
+        void UpdatePDParam()
+        {
+            if(activeController != null)
+            {
+                activeController.setCompliance(compliance);
+                activeController.setDamping(damping);
+                Debug.Log("getCompliance : "+ activeController.getCompliance());
+                Debug.Log("getDamping : "+ activeController.getDamping());
+            }
+            compliancePrev = compliance;
+            dampingPrev    = damping;
+        }
+
         void UpdateControlValue()
         {
             switch (controlType)
@@ -154,6 +179,10 @@ namespace PWRISimulator
                     {
                         double dir = controlValue > 0.0 ? 1.0 : (controlValue < 0.0 ? -1.0 : 0.0);
                         targetSpeedController.setSpeed(dir * float.PositiveInfinity);
+                        if (controlValue > controlMaxForce)
+                            controlValue = controlMaxForce;
+                        else if (controlValue < -controlMaxForce)
+                            controlValue = -controlMaxForce;
                         targetSpeedController.setForceRange(controlValue, controlValue);
                     }
                     break;

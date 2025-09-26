@@ -25,6 +25,11 @@ namespace PWRISimulator.ROS
         // for Twist Command
         public TrackTwistCommandConvertor twistCommandConvertor;
 
+        public float swingKappa;
+        public float boomKappa;
+        public float armKappa;
+        public float bucketKappa;
+
         // Mapping for joint_name → index num 
         private readonly Dictionary<string, int> _frontIndexMap = new Dictionary<string, int>(System.StringComparer.Ordinal);
         private const string JOINT_BUCKET = "bucket_joint";
@@ -164,24 +169,32 @@ namespace PWRISimulator.ROS
                     case ControlType.Force:
                         if (TryGetJointValue(cmd.effort, JOINT_BUCKET, out double bucketEff))
                         {
+                            // bucketEff = 356270.3514f * (float)bucketEff;
+                            bucketEff = bucketKappa * (float)bucketEff;
                             joints.bucketTilt.actuator.controlType = ControlType.Force;
                             joints.bucketTilt.actuator.controlValue = bucketCylConv.CalculateCylinderRodTelescopingForce((float)bucketEff);
                         }
 
                         if (TryGetJointValue(cmd.effort, JOINT_ARM, out double armEff))
                         {
+                            // armEff = 490966.1364f * (float)armEff;
+                            armEff = armKappa * (float)armEff;
                             joints.armTilt.actuator.controlType = ControlType.Force;
                             joints.armTilt.actuator.controlValue = armCylConv.CalculateCylinderRodTelescopingForce((float)armEff);
                         }
 
                         if (TryGetJointValue(cmd.effort, JOINT_BOOM, out double boomEff))
                         {
+                            // boomEff = 775847.7217f * (float)boomEff;
+                            boomEff = -boomKappa * (float)boomEff;
                             joints.boomTilt.actuator.controlType = ControlType.Force;
                             joints.boomTilt.actuator.controlValue = boomCylConv.CalculateCylinderRodTelescopingForce((float)boomEff);
                         }
 
                         if (TryGetJointValue(cmd.effort, JOINT_SWING, out double swingEff))
                         {
+                            // swingEff = 68000.0f * (float)swingEff;
+                            swingEff = swingKappa * (float)swingEff;
                             joints.swing.actuator.controlType = ControlType.Force;
                             joints.swing.actuator.controlValue = swingEff;
                         }

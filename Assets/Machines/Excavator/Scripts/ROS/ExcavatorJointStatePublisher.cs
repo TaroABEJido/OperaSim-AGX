@@ -19,7 +19,8 @@ namespace PWRISimulator.ROS
         [SerializeField] uint frequency = 60;
         [SerializeField] ExcavatorJoints excavatorJoint;
         [SerializeField] string frameId = "";
-        readonly string[] joint_name = {"swing_joint", "boom_joint", "arm_joint", "bucket_joint", "right_track", "left_track"};
+        // readonly string[] joint_name = {"swing_joint", "boom_joint", "arm_joint", "bucket_joint", "right_track", "left_track"};
+        readonly string[] joint_name = {"swing_joint", "boom_joint", "arm_joint", "bucket_joint"};
 
         // ラジアン値を -π～+π に正規化するヘルパー ---
         static double NormalizeRadians(double angle)
@@ -50,13 +51,13 @@ namespace PWRISimulator.ROS
             jointStateMsg.velocity[3] = excavatorJoint.bucketTilt.JointCurrentSpeed;
             jointStateMsg.effort[3]   = excavatorJoint.bucketTilt.JointCurrentForce;
 
-            jointStateMsg.position[4] = excavatorJoint.rightSprocket.JointCurrentPosition;
-            jointStateMsg.velocity[4] = excavatorJoint.rightSprocket.JointCurrentSpeed;
-            jointStateMsg.effort[4]   = excavatorJoint.rightSprocket.JointCurrentForce;
+            // jointStateMsg.position[4] = excavatorJoint.rightSprocket.JointCurrentPosition;
+            // jointStateMsg.velocity[4] = excavatorJoint.rightSprocket.JointCurrentSpeed;
+            // jointStateMsg.effort[4]   = excavatorJoint.rightSprocket.JointCurrentForce;
             
-            jointStateMsg.position[5] = excavatorJoint.leftSprocket.JointCurrentPosition;
-            jointStateMsg.velocity[5] = excavatorJoint.leftSprocket.JointCurrentSpeed;
-            jointStateMsg.effort[5]   = excavatorJoint.leftSprocket.JointCurrentForce;
+            // jointStateMsg.position[5] = excavatorJoint.leftSprocket.JointCurrentPosition;
+            // jointStateMsg.velocity[5] = excavatorJoint.leftSprocket.JointCurrentSpeed;
+            // jointStateMsg.effort[5]   = excavatorJoint.leftSprocket.JointCurrentForce;
 
             jointStateMsg.header = MessageUtil.ToHeadermessage(Time.fixedTimeAsDouble, frameId);
         }
@@ -67,7 +68,7 @@ namespace PWRISimulator.ROS
 
         override protected string TopicPhrase()
         {
-            return "/joint_state";
+            return "/joint_states";
         }
 
         override protected uint Frequency()
@@ -77,7 +78,8 @@ namespace PWRISimulator.ROS
 
         protected override uint NumberOfJoints()
         {
-            return 6;
+            // return 6;
+            return 4;
         }
 
         protected override string[] JointNames()
