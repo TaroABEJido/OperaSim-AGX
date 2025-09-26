@@ -42,6 +42,12 @@ namespace PWRISimulator
         [ConditionalHide("controlEnabled", true)]
         public double controlMaxForce = double.PositiveInfinity;
 
+        /// <summary>
+        /// むだ時間。入力が与えられた際の Constraintが制御により動き出すための時間（ms）
+        /// </summary>
+        [ConditionalHide("controlEnabled", true)]
+        public double deadTime = 0.0;
+
         public double CurrentPosition
         {
             get { return nativeConstraint != null ? nativeConstraint.getAngle() : 0.0; }

@@ -9,6 +9,9 @@ namespace PWRISimulator.ROS
 {
     public class DumpTruckJoint : ConstructionMachine
     {
+        public bool activateDeadTime = true;
+        public double trackDeadTime = 0.0;    
+        
         [Header("Constraint Controls")]
 
         public bool rotateJointEnabled = false;
