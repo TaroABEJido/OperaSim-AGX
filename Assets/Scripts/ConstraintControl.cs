@@ -48,6 +48,18 @@ namespace PWRISimulator
         [ConditionalHide("controlEnabled", true)]
         public double deadTime = 0.0;
 
+
+        [Header("Constraint State")]
+        [ConditionalHide("controlEnabled", true)][SerializeField] public bool isEnableState = false;
+        [ConditionalHide("controlEnabled", true)][SerializeField] public double forceRangeMaxState;
+        [ConditionalHide("controlEnabled", true)][SerializeField] public double forceRangeMinState;
+        [ConditionalHide("controlEnabled", true)][SerializeField] public double forceState;
+        [ConditionalHide("controlEnabled", true)][SerializeField] public double compState;
+        [ConditionalHide("controlEnabled", true)][SerializeField] public double dampState;
+
+        [ConditionalHide("controlEnabled", true)][SerializeField] public double reguComp;
+        [ConditionalHide("controlEnabled", true)][SerializeField] public double reguDump;
+
         public double CurrentPosition
         {
             get { return nativeConstraint != null ? nativeConstraint.getAngle() : 0.0; }
@@ -67,6 +79,7 @@ namespace PWRISimulator
         /// </summary>
         public void Initialize()
         {
+            // Debug.Log($"[{nameof(ConstraintControl)}] Applying Params 72...");
             if (constraint?.GetInitialized<Constraint>() != null)
             {
                 nativeConstraint = agx.Constraint1DOF.safeCast(constraint.Native);
@@ -102,6 +115,8 @@ namespace PWRISimulator
 
             if (controlValue != controlValuePrev)
                 UpdateControlValue();
+
+            GetConstraintParam();
         }
 
         private ControlType? controlTypePrev = null;
@@ -143,6 +158,37 @@ namespace PWRISimulator
             controlMaxForcePrev = controlMaxForce;
         }
 
+        public (double, double) UpdateComplianceDamping(double comp, double dump)
+        {
+            double c = -1.0;
+            double d = -1.0; 
+
+            switch (controlType)
+            {
+                case ControlType.Position:
+                    if (lockController != null)
+                    {
+                        lockController.setCompliance(comp);
+                        lockController.setDamping(dump);
+                        c = lockController.getCompliance();
+                        d = lockController.getDamping();
+                    }
+                    break;
+                case ControlType.Speed:
+                    if (targetSpeedController != null)
+                    {
+                        targetSpeedController.setCompliance(comp);
+                        targetSpeedController.setDamping(comp);
+                        c = targetSpeedController.getCompliance();
+                        d = targetSpeedController.getDamping();                        
+                    }
+                    break;
+                case ControlType.Force:
+                    break;
+            }
+            return (c, d);
+        }
+
         void UpdateControlValue()
         {
             switch (controlType)
@@ -165,6 +211,32 @@ namespace PWRISimulator
                     break;
             }
             controlValuePrev = controlValue;
+        }
+
+        void GetConstraintParam()
+        {
+
+            isEnableState = activeController.getEnable();
+
+            if (activeController != null) {
+                agx.RangeReal r = activeController.getForceRange();
+                forceRangeMaxState = r.upper();
+                forceRangeMinState = r.lower();
+                if (controlType == ControlType.Position || controlType == ControlType.Speed) {
+                    compState = activeController.getCompliance();
+                    dampState = activeController.getDamping();
+                    reguComp = activeController.getRegularizationParameters().getCompliance();
+                    reguDump = activeController.getRegularizationParameters().getDamping();                                      
+                }
+                forceState = activeController.getCurrentForce();
+            }
+            // isEnableState = lockController.getEnable();
+            // AGXUnity.RangeReal r = lockController.ForceRange;
+            // forceRangeMaxState = r.Upper;
+            // forceRangeMinState = r.Lower;
+
+            // compState = lockController.getCompliance();
+            // dampState = lockController.getDamping();
         }
     }
 }

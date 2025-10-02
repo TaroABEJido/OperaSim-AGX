@@ -31,7 +31,7 @@ namespace PWRISimulator
             Vector3 b = cylinderBindPoint.transform.position - boomPin.transform.position;
             Vector3 c = armPin.transform.position - cylinderBindPoint.transform.position;
             Vector3 d = armPin.transform.position - boomPin.transform.position;
-            Vector3 e = new Vector3(armPin.transform.position.x, boomPin.transform.position.y, armPin.transform.position.z) - boomPin.transform.position;
+            Vector3 e = new Vector3(boomPin.transform.position.x, boomPin.transform.position.y, armPin.transform.position.z) - boomPin.transform.position;
 
             boomPinToCylinderRoot = a.magnitude;
             boomPinToCylinderBindPoint = b.magnitude;
