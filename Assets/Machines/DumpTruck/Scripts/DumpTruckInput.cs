@@ -10,6 +10,8 @@ namespace PWRISimulator.ROS
         public DumpTruckDumpSubscriber RotDumpSubscriber;
         public TrackMessageSubscriber trackSubscriber;
         public DumpTruckSettingSubscriber settingSubscriber;
+        public DumpVesselStateController vesselStateController;
+
         [SerializeField] DumpTruckJoint dumpTruckJoint;
         [SerializeField] ConstractionMovementControlType movementControlType;
         [SerializeField] ControlType trackControlType = ControlType.Position;
@@ -186,11 +188,9 @@ namespace PWRISimulator.ROS
             {
                 double currentTimeMs = (Time.fixedTimeAsDouble - Time.fixedDeltaTime) * 1000.0;
 
-                // ベッセル
-                double currentVesselPos = ;
-                double thresholdVesselPos = 0.5 * Mathf.Deg2Rad;  // 0.5 [deg]
+                // ベッセル角度
+                double currentVesselPos = joints.dump_joint.CurrentPosition;
 
-                /*** この部分を微修正  ***/ 
                 switch (vesselControlType)
                 {
                     case ControlType.Position:
@@ -198,10 +198,9 @@ namespace PWRISimulator.ROS
                         {
                             /*** この部分を微修正  ***/
                             // double vessel_vel_param;
-                            // double 
-                            
-                            joints.dump_joint.controlType = ControlType.Position;
-                            joints.dump_joint.controlValue = VesselControlConvertor (dumpPos, currentVesselPos, thresholdVesselPos);
+                            joints.dump_joint.controlType = ControlType.Speed;
+                            joints.dump_joint.controlValue = vesselStateController.computeAngularVelocity (currentVesselPos, dumpPos);
+                            // joints.dump_joint.controlValue = dumpPos;
                         }
                         break;
                     case ControlType.Speed:
@@ -459,26 +458,6 @@ namespace PWRISimulator.ROS
                         return GetJointValue(cmd.effort, jointName, _trackIndexMap, out value);
                 }
                 return false;
-            }
-        }
-
-        private double VesselControlConvertor (double dumpPs, double currentlPos, double thresholdPos)
-        {
-            
-            // if ( Math.Abs(currentlPos - dumpPs) < thresholdPos)
-            // {
-                
-
-            // }
-            if (currentlPos > dumpPs)
-            {
-
-
-            }
-            else if (currentlPos < dumpPs)
-            {
-
-
             }
         }
     }
