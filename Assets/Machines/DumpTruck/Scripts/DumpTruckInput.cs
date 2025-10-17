@@ -10,6 +10,8 @@ namespace PWRISimulator.ROS
         public DumpTruckDumpSubscriber RotDumpSubscriber;
         public TrackMessageSubscriber trackSubscriber;
         public DumpTruckSettingSubscriber settingSubscriber;
+        public DumpVesselStateController vesselStateController;
+
         [SerializeField] DumpTruckJoint dumpTruckJoint;
         [SerializeField] ConstractionMovementControlType movementControlType;
         [SerializeField] ControlType trackControlType = ControlType.Position;
@@ -186,14 +188,19 @@ namespace PWRISimulator.ROS
             {
                 double currentTimeMs = (Time.fixedTimeAsDouble - Time.fixedDeltaTime) * 1000.0;
 
-                // ベッセル
+                // ベッセル角度
+                double currentVesselPos = joints.dump_joint.CurrentPosition;
+
                 switch (vesselControlType)
                 {
                     case ControlType.Position:
-                        if (GetEffectiveJointValue(currentTimeMs, JOINT_DUMP, vesselControlType, _dumpIndexMap, out double dumpVal))
+                        if (GetEffectiveJointValue(currentTimeMs, JOINT_DUMP, vesselControlType, _dumpIndexMap, out double dumpPos))
                         {
-                            joints.dump_joint.controlType = ControlType.Position;
-                            joints.dump_joint.controlValue = dumpVal;
+                            /*** この部分を微修正  ***/
+                            // double vessel_vel_param;
+                            joints.dump_joint.controlType = ControlType.Speed;
+                            joints.dump_joint.controlValue = vesselStateController.computeAngularVelocity (currentVesselPos, dumpPos);
+                            // joints.dump_joint.controlValue = dumpPos;
                         }
                         break;
                     case ControlType.Speed:
