@@ -32,77 +32,6 @@ namespace PWRISimulator
         private float beta = 2.0f; // [rad]
         private float kai = 0.0f; // [rad] 
 
-        // ===== ここから Inspector 表示用（読み取り専用風） =====
-        [Header("Runtime Debug (Inspector View)")]
-        [SerializeField] private float dbg_alpha;
-        [SerializeField] private float dbg_beta;
-        [SerializeField] private float dbg_kai;
-        [Space(4)]
-        [SerializeField] private float dbg_bucketPinToILinkRoot;
-        [SerializeField] private float dbg_bucketPinToHLinkRoot;
-        [SerializeField] private float dbg_HLinkLength;
-        [SerializeField] private float dbg_ILinkLength;
-        [SerializeField] private float dbg_ILinkRootToCylinderRoot;
-        [SerializeField] private float dbg_bucketPinTobucketEdge;
-
-        // 追加：最後に評価した角度と、そのときのリンク長（任意）
-        [Space(8)]
-        [SerializeField] private float dbg_lastAngleRad;
-        [SerializeField] private float dbg_lastLinkLength;
-
-        // 追加：一括コピー用のテキストブロック
-        [Space(10)]
-        [Header("Copyable Debug Block")]
-        [SerializeField, TextArea(6, 18)]
-        private string dbg_copyBlock;
-
-        // ===== 値更新をこの関数に集約（要求仕様） =====
-        private void UpdateCopyBlock()
-        {
-            dbg_copyBlock = $@"{dbg_alpha:F6},{dbg_beta:F6},{dbg_kai:F6},{dbg_bucketPinToILinkRoot:F6},{dbg_bucketPinToHLinkRoot:F6},{dbg_HLinkLength:F6},{dbg_ILinkLength:F6},{dbg_ILinkRootToCylinderRoot:F6},{dbg_bucketPinTobucketEdge:F6}";
-        }
-
-        private void RefreshInspectorDebugValues()
-        {
-            if (bucketPin == null || bucketEdge == null || ILinkRoot == null || HLinkRoot == null ||
-                cylinderBindPoint == null || cylinderRoot == null || armPin == null)
-            {
-                return;
-            }
-
-            // 元 DoStart と同等のジオメトリ更新（実値反映）
-            Vector3 aa = bucketEdge.transform.position - bucketPin.transform.position;
-            Vector3 bb = ILinkRoot.transform.position - bucketPin.transform.position;
-            Vector3 cc = HLinkRoot.transform.position - bucketPin.transform.position;
-
-            dbg_beta = Mathf.Deg2Rad * Vector3.Angle(aa, cc);
-            dbg_bucketPinToILinkRoot = bb.magnitude;
-            dbg_bucketPinToHLinkRoot = cc.magnitude;
-
-            dbg_HLinkLength = (HLinkRoot.transform.position - cylinderBindPoint.transform.position).magnitude;
-            dbg_ILinkLength = (ILinkRoot.transform.position - cylinderBindPoint.transform.position).magnitude;
-            dbg_ILinkRootToCylinderRoot = (cylinderRoot.transform.position - ILinkRoot.transform.position).magnitude;
-            dbg_bucketPinTobucketEdge = (bucketEdge.transform.position - bucketPin.transform.position).magnitude;
-
-            // // alpha, kai（元コードに準拠）
-            dbg_alpha = Mathf.PI - Mathf.Deg2Rad *
-                    Vector3.Angle(cylinderRoot.transform.position - ILinkRoot.transform.position,
-                                  bucketPin.transform.position - ILinkRoot.transform.position);
-            dbg_kai = Mathf.Deg2Rad * Vector3.Angle(ILinkRoot.transform.position - bucketPin.transform.position,
-                                                armPin.transform.position - bucketPin.transform.position);
-
-            // // --- Inspector 表示用フィールドにコピー ---
-            // dbg_alpha = alpha;
-            // dbg_beta = beta;
-            // dbg_kai = kai;
-            // dbg_bucketPinToILinkRoot = bucketPinToILinkRoot;
-            // dbg_bucketPinToHLinkRoot = bucketPinToHLinkRoot;
-            // dbg_HLinkLength = HLinkLength;
-            // dbg_ILinkLength = ILinkLength;
-            // dbg_ILinkRootToCylinderRoot = ILinkRootToCylinderRoot;
-            // dbg_bucketPinTobucketEdge = bucketPinTobucketEdge;
-        }
-
 
         protected override void DoStart()
         {
@@ -123,19 +52,13 @@ namespace PWRISimulator
             kai = Mathf.Deg2Rad * Vector3.Angle( ILinkRoot.transform.position - bucketPin.transform.position, armPin.transform.position - bucketPin.transform.position);
 
             // ---- Debug.Log 追記 ----
-            Debug.Log($"[DoStart] alpha={alpha:F6}");
-            Debug.Log($"[DoStart] beta={beta:F6}");
-            Debug.Log($"[DoStart] kai={kai:F6}");
-            Debug.Log($"[DoStart] bucketPinToILinkRoot={bucketPinToILinkRoot:F6}, bucketPinToHLinkRoot={bucketPinToHLinkRoot:F6}");
-            Debug.Log($"[DoStart] bucketPinToILinkRoot={bucketPinToILinkRoot:F6}, bucketPinToHLinkRoot={bucketPinToHLinkRoot:F6}");
-            Debug.Log($"[DoStart] HLinkLength={HLinkLength:F6}, ILinkLength={ILinkLength:F6}, ILinkRootToCylinderRoot={ILinkRootToCylinderRoot:F6}, bucketPinTobucketEdge={bucketPinTobucketEdge:F6}");
-
-            // Debug.Log($"[DoStart] a={a}, b={b}, c={c}");
-            // Debug.Log($"[DoStart] beta(rad)={beta:F6}");
+            // Debug.Log($"[DoStart] alpha={alpha:F6}");
+            // Debug.Log($"[DoStart] beta={beta:F6}");
+            // Debug.Log($"[DoStart] kai={kai:F6}");
+            // Debug.Log($"[DoStart] bucketPinToILinkRoot={bucketPinToILinkRoot:F6}, bucketPinToHLinkRoot={bucketPinToHLinkRoot:F6}");
             // Debug.Log($"[DoStart] bucketPinToILinkRoot={bucketPinToILinkRoot:F6}, bucketPinToHLinkRoot={bucketPinToHLinkRoot:F6}");
             // Debug.Log($"[DoStart] HLinkLength={HLinkLength:F6}, ILinkLength={ILinkLength:F6}, ILinkRootToCylinderRoot={ILinkRootToCylinderRoot:F6}, bucketPinTobucketEdge={bucketPinTobucketEdge:F6}");
-            // Debug.Log($"[DoStart] alpha(rad)={alpha:F6}");
-            // Debug.Log($"[DoStart] kai(rad)={kai:F6}");
+
         }
         public override float CalculateCylinderRodTelescoping(float _angle)
         {
@@ -165,9 +88,6 @@ namespace PWRISimulator
             float omega = Mathf.Acos( (Mathf.Pow(bucketPinToILinkRoot, 2.0f) + Mathf.Pow(diagonal, 2.0f) - Mathf.Pow(bucketPinToHLinkRoot, 2.0f)) / (2 * bucketPinToILinkRoot * diagonal) );
             float lamda = delta < Mathf.PI? eta + omega: eta - omega;
             float psi = Mathf.PI - alpha - lamda;
-
-            RefreshInspectorDebugValues();
-            UpdateCopyBlock();
             
             // ---- Debug.Log 追記 ----
             // Debug.Log($"[CalculateCylinderLinkLength] gameObject={name}");
