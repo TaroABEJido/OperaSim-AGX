@@ -7,8 +7,11 @@ namespace PWRISimulator.ROS
         public DumpTruckDumpSubscriber RotDumpSubscriber;
         public TrackMessageSubscriber trackSubscriber;
         public DumpTruckSettingSubscriber settingSubscriber;
+        [SerializeField] DumpTruckJoint dumpTruckJoint;
         [SerializeField] ConstractionMovementControlType movementControlType;
-        [SerializeField] ControlType controlType = ControlType.Position;
+        [SerializeField] ControlType trackControlType = ControlType.Position;
+        [SerializeField] ControlType vesselControlType = ControlType.Position;
+        [SerializeField] ControlType rotateControlType = ControlType.Position;
 
         [Header("Dummy")]
         [SerializeField] bool enabledDummy;
@@ -55,7 +58,7 @@ namespace PWRISimulator.ROS
             else
             {
                 // 上部旋回体
-                switch(controlType)
+                switch(rotateControlType)
                 {
                     case ControlType.Position:
                         break;
@@ -71,7 +74,7 @@ namespace PWRISimulator.ROS
                 switch(movementControlType)
                 {
                     case ConstractionMovementControlType.ActuatorCommand:
-                        switch(controlType)
+                        switch(trackControlType)
                         {
                             case ControlType.Position:
                                 break;
@@ -106,11 +109,17 @@ namespace PWRISimulator.ROS
 
                 joints.dump_joint.controlType = ControlType.Position;
                 joints.dump_joint.controlValue = joints.dump_joint.CurrentPosition;
+
+                if (dumpTruckJoint.rotateJointEnabled)
+                {
+                    joints.rotate_joint.controlType = ControlType.Position;
+                    joints.rotate_joint.controlValue = joints.dump_joint.CurrentPosition;                    
+                }
             }
             else
             {
                 // 上部旋回体
-                switch (controlType)
+                switch (vesselControlType)
                 {
                     case ControlType.Position:
                         joints.dump_joint.controlType = ControlType.Position;
@@ -128,11 +137,32 @@ namespace PWRISimulator.ROS
                         break;
                 }
 
+                if (dumpTruckJoint.rotateJointEnabled)
+                {
+                    switch (rotateControlType)
+                    {
+                        case ControlType.Position:
+                            joints.rotate_joint.controlType = ControlType.Position;
+                            joints.rotate_joint.controlValue = RotDumpSubscriber.DumpCmd.position[0];
+                            break;
+                        case ControlType.Speed:
+                            joints.rotate_joint.controlType = ControlType.Speed;
+                            joints.rotate_joint.controlValue = RotDumpSubscriber.DumpCmd.velocity[0];
+                            break;
+                        case ControlType.Force:
+                            joints.rotate_joint.controlType = ControlType.Force;
+                            joints.rotate_joint.controlValue = RotDumpSubscriber.DumpCmd.effort[0];
+                            break;
+                        default:
+                            break;
+                    }
+                }                
+
                 // 下部走行体
                 switch (movementControlType)
                 {
                     case ConstractionMovementControlType.ActuatorCommand:
-                        switch (controlType)
+                        switch (trackControlType)
                         {
                             case ControlType.Position:
                                 joints.rightSprocket.controlType = ControlType.Position;

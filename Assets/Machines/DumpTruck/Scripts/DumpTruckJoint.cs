@@ -10,10 +10,15 @@ namespace PWRISimulator.ROS
     public class DumpTruckJoint : ConstructionMachine
     {
         [Header("Constraint Controls")]
+
+        public bool rotateJointEnabled = false;
+
         public ConstraintControl leftSprocket;
         public ConstraintControl rightSprocket;
-        public ConstraintControl rotate_joint;
         public ConstraintControl dump_joint;
+
+        [ConditionalHide(nameof(rotateJointEnabled), hideCompletely = true)]
+        public ConstraintControl rotate_joint;
 
         private DumpTruckInput input;
 
@@ -28,8 +33,12 @@ namespace PWRISimulator.ROS
 
             leftSprocket.constraint.Native.setEnableComputeForces(true);
             rightSprocket.constraint.Native.setEnableComputeForces(true);
-            //rotate_joint.constraint.Native.setEnableComputeForces(true);
             dump_joint.constraint.Native.setEnableComputeForces(true);
+
+            if ( rotateJointEnabled )
+            {
+                rotate_joint.constraint.Native.setEnableComputeForces(true);
+            }
 
             input = gameObject.GetComponent<DumpTruckInput>();
 
