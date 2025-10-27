@@ -127,12 +127,21 @@ namespace PWRISimulator
             //sprocketSpeed_L = (out_speed - trackWidth * 0.5 * out_omega) / leftSprocketRadius;
             //sprocketSpeed_R = (out_speed + trackWidth * 0.5 * out_omega) / rightSprocketRadius;
 
-            // Normal Calculation
+            double linear=2, angular=0.2;
 
-            CommandLinearAngularVelocityVWBehaviorMode (cmd_linear.x, cmd_angular.z);
+            // 車体の最大設定速度，旋回速度を超えた値を制限
+            linear = Math.Min(cmd_linear.x, maxLinearVelocity);
+            linear = Math.Max(linear, -maxLinearVelocity);
+            angular = Math.Min(cmd_angular.z, maxAngularVelocity);
+            angular = Math.Max(angular, -maxAngularVelocity); 
 
-            sprocketSpeed_L = (cmd_linear.x - trackWidth * 0.5 * cmd_angular.z) / leftSprocketRadius;
-            sprocketSpeed_R = (cmd_linear.x + trackWidth * 0.5 * cmd_angular.z) / rightSprocketRadius;
+            Debug.Log($"[CalculateCylinderLinkLength] gameObject={linear}");
+
+            if (EnableVWBehaviorMode)
+                (linear, angular) = CommandLinearAngularVelocityVWBehaviorMode (linear, angular);
+
+            sprocketSpeed_L = (linear - trackWidth * 0.5 * angular) / (leftSprocketRadius + 0.07);
+            sprocketSpeed_R = (linear + trackWidth * 0.5 * angular) / (rightSprocketRadius + 0.07);
 
 
         }
@@ -140,19 +149,18 @@ namespace PWRISimulator
         public void SetCommand(double cmd_linear, double cmd_angular)
         {
             double linear, angular;
-            bool enable_custom_vw_mode = true;
 
             // 車体の最大設定速度，旋回速度を超えた値を制限
             linear = Math.Min(cmd_linear, maxLinearVelocity);
-            linear = Math.Max(cmd_angular, -maxLinearVelocity);
-            angular = Math.Min(cmd_linear, maxAngularVelocity);
+            linear = Math.Max(cmd_linear, -maxLinearVelocity);
+            angular = Math.Min(cmd_angular, maxAngularVelocity);
             angular = Math.Max(cmd_angular, -maxAngularVelocity); 
 
-            if (enable_custom_vw_mode)
-                (linear, angular) = CommandLinearAngularVelocityVWBehaviorMode (cmd_linear, cmd_angular);
+            if (EnableVWBehaviorMode)
+                (linear, angular) = CommandLinearAngularVelocityVWBehaviorMode (linear, angular);
 
-            sprocketSpeed_L = (linear - trackWidth * 0.5 * angular) / leftSprocketRadius;
-            sprocketSpeed_R = (linear + trackWidth * 0.5 * angular) / rightSprocketRadius;
+            sprocketSpeed_L = (linear - trackWidth * 0.5 * angular) / (leftSprocketRadius + 0.07);
+            sprocketSpeed_R = (linear + trackWidth * 0.5 * angular) / (rightSprocketRadius + 0.07);
         }
 
 
