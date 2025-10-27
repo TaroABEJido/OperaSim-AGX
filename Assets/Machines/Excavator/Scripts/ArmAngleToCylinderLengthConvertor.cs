@@ -22,6 +22,7 @@ namespace PWRISimulator
         private float armLength = 2.0f; // [m]
         private float alpha = 0.3f; // [rad]
         private float beta = 0.1f; // [rad]
+        private float gamma = 0.1f; // [rad]
 
         protected override void DoStart()
         {
@@ -33,18 +34,22 @@ namespace PWRISimulator
             Vector3 d = armPin.transform.position - cylinderBindPoint.transform.position;
             beta = Mathf.Deg2Rad * Vector3.Angle(c, d);
 
+            Vector3 f = cylinderBindPoint.transform.position - bucketPin.transform.position;
+            Vector3 e = armPin.transform.position - bucketPin.transform.position;
+            gamma = Mathf.Deg2Rad * Vector3.Angle(e, f);        
+
             armPinToCylinderRoot = b.magnitude;
             armPinToCylinderBindPoint = d.magnitude;
             armLength = (bucketPin.transform.position - armPin.transform.position).magnitude;
         }
 
         public override float CalculateCylinderRodTelescoping(float _angle)
-        {
+        { 
             return CalculateCylinderLinkLength(_angle) - cylinderLength - cylinderRodDefaultLength;
         }
         protected override float CalculateCylinderLinkLength(float _angle)
         {
-            return Mathf.Sqrt(Mathf.Pow(armPinToCylinderRoot, 2.0f) + Mathf.Pow(armPinToCylinderBindPoint, 2.0f) - 2 * armPinToCylinderRoot * armPinToCylinderBindPoint * Mathf.Cos(_angle - alpha + beta));
+            return Mathf.Sqrt(Mathf.Pow(armPinToCylinderRoot, 2.0f) + Mathf.Pow(armPinToCylinderBindPoint, 2.0f) - 2 * armPinToCylinderRoot * armPinToCylinderBindPoint * Mathf.Cos(_angle - alpha + beta + gamma));
         }
 
         public override float CalculateCylinderRodTelescopingVelocity(float _velocity)
@@ -65,7 +70,8 @@ namespace PWRISimulator
 
         protected override void FixedUpdate()
         {
-            currentLinkAngle = joint.GetCurrentAngle() + Mathf.Deg2Rad * (jointInitialAngle);
+            // currentLinkAngle = joint.GetCurrentAngle() + Mathf.Deg2Rad * (jointInitialAngle);
+            // Debug.Log("joint.GetCurrentAngle() : "+currentLinkAngle);
         }
     }
 }
