@@ -16,7 +16,7 @@ namespace PWRISimulator.ROS
             private set => frontCmd = value;
         }
 
-        readonly string frontCmdPhrase = "/front_cmd";
+        readonly string frontCmdPhrase = "/unity/front_cmd";
 
         protected override void CreateSubscriptions()
         {

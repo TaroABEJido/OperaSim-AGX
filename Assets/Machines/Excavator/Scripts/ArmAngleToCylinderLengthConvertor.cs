@@ -49,6 +49,13 @@ namespace PWRISimulator
         }
         protected override float CalculateCylinderLinkLength(float _angle)
         {
+            // jointMaxAngle <->jointMinAngle の間で各リンク角度を制限
+            if (Mathf.Deg2Rad * jointMaxAngle < _angle)
+                _angle = Mathf.Deg2Rad * jointMaxAngle;
+                
+            else if (Mathf.Deg2Rad * jointMinAngle > _angle)
+                _angle = Mathf.Deg2Rad * jointMinAngle;
+            
             return Mathf.Sqrt(Mathf.Pow(armPinToCylinderRoot, 2.0f) + Mathf.Pow(armPinToCylinderBindPoint, 2.0f) - 2 * armPinToCylinderRoot * armPinToCylinderBindPoint * Mathf.Cos(_angle - alpha + beta + gamma));
         }
 
