@@ -49,16 +49,16 @@ namespace PWRISimulator
         public double deadTime = 0.0;
 
 
-        [Header("Constraint State")]
-        [ConditionalHide("controlEnabled", true)][SerializeField] public bool isEnableState = false;
-        [ConditionalHide("controlEnabled", true)][SerializeField] public double forceRangeMaxState;
-        [ConditionalHide("controlEnabled", true)][SerializeField] public double forceRangeMinState;
-        [ConditionalHide("controlEnabled", true)][SerializeField] public double forceState;
-        [ConditionalHide("controlEnabled", true)][SerializeField] public double compState;
-        [ConditionalHide("controlEnabled", true)][SerializeField] public double dampState;
+        // [Header("Constraint State")]
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public bool isEnableState = false;
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public double forceRangeMaxState;
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public double forceRangeMinState;
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public double forceState;
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public double compState;
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public double dampState;
 
-        [ConditionalHide("controlEnabled", true)][SerializeField] public double reguComp;
-        [ConditionalHide("controlEnabled", true)][SerializeField] public double reguDump;
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public double reguComp;
+        // [ConditionalHide("controlEnabled", true)][SerializeField] public double reguDump;
 
         public double CurrentPosition
         {
@@ -116,7 +116,8 @@ namespace PWRISimulator
             if (controlValue != controlValuePrev)
                 UpdateControlValue();
 
-            GetConstraintParam();
+            // Constraint 内各パラメータを確認するための関数
+            // GetConstraintParam();
         }
 
         private ControlType? controlTypePrev = null;
@@ -212,31 +213,31 @@ namespace PWRISimulator
             }
             controlValuePrev = controlValue;
         }
+        // // Constraint 内各パラメータを確認するための関数
+        // void GetConstraintParam()
+        // {
 
-        void GetConstraintParam()
-        {
+        //     isEnableState = activeController.getEnable();
 
-            isEnableState = activeController.getEnable();
+        //     if (activeController != null) {
+        //         agx.RangeReal r = activeController.getForceRange();
+        //         forceRangeMaxState = r.upper();
+        //         forceRangeMinState = r.lower();
+        //         if (controlType == ControlType.Position || controlType == ControlType.Speed) {
+        //             compState = activeController.getCompliance();
+        //             dampState = activeController.getDamping();
+        //             reguComp = activeController.getRegularizationParameters().getCompliance();
+        //             reguDump = activeController.getRegularizationParameters().getDamping();                                      
+        //         }
+        //         forceState = activeController.getCurrentForce();
+        //     }
+        //     // isEnableState = lockController.getEnable();
+        //     // AGXUnity.RangeReal r = lockController.ForceRange;
+        //     // forceRangeMaxState = r.Upper;
+        //     // forceRangeMinState = r.Lower;
 
-            if (activeController != null) {
-                agx.RangeReal r = activeController.getForceRange();
-                forceRangeMaxState = r.upper();
-                forceRangeMinState = r.lower();
-                if (controlType == ControlType.Position || controlType == ControlType.Speed) {
-                    compState = activeController.getCompliance();
-                    dampState = activeController.getDamping();
-                    reguComp = activeController.getRegularizationParameters().getCompliance();
-                    reguDump = activeController.getRegularizationParameters().getDamping();                                      
-                }
-                forceState = activeController.getCurrentForce();
-            }
-            // isEnableState = lockController.getEnable();
-            // AGXUnity.RangeReal r = lockController.ForceRange;
-            // forceRangeMaxState = r.Upper;
-            // forceRangeMinState = r.Lower;
-
-            // compState = lockController.getCompliance();
-            // dampState = lockController.getDamping();
-        }
+        //     // compState = lockController.getCompliance();
+        //     // dampState = lockController.getDamping();
+        // }
     }
 }
